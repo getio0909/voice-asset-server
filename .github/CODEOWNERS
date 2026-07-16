@@ -1,0 +1,9 @@
+# Default ownership for this repository.
+* @getio0909
+
+# Contract, schema, security, and release changes require explicit review.
+/contracts/ @getio0909
+/migrations/ @getio0909
+/docs/adr/ @getio0909
+/SECURITY.md @getio0909
+/.github/workflows/ @getio0909

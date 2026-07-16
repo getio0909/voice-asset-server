@@ -1,0 +1,217 @@
+openapi: 3.1.0
+jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
+info:
+  title: VoiceAsset Server API
+  version: 0.1.0
+  summary: Public REST contract for the VoiceAsset modular monolith.
+  description: >-
+    Phase 0 exposes process health and capability negotiation. Future endpoints
+    are added only when their implementation and tests land in the same change.
+  license:
+    name: GNU Affero General Public License v3.0 or later
+    identifier: AGPL-3.0-or-later
+servers:
+  - url: /
+    description: Server hosting this contract
+tags:
+  - name: System
+    description: Process health and server capability discovery.
+security: []
+paths:
+  /healthz:
+    parameters:
+      - $ref: '#/components/parameters/XRequestID'
+    get:
+      tags: [System]
+      summary: Get aggregate process health
+      operationId: getHealth
+      responses:
+        '200':
+          $ref: '#/components/responses/HealthResponse'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowedResponse'
+  /livez:
+    parameters:
+      - $ref: '#/components/parameters/XRequestID'
+    get:
+      tags: [System]
+      summary: Check whether the API process is alive
+      operationId: getLiveness
+      responses:
+        '200':
+          $ref: '#/components/responses/HealthResponse'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowedResponse'
+  /readyz:
+    parameters:
+      - $ref: '#/components/parameters/XRequestID'
+    get:
+      tags: [System]
+      summary: Check whether the API process can serve Phase 0 traffic
+      operationId: getReadiness
+      responses:
+        '200':
+          $ref: '#/components/responses/HealthResponse'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowedResponse'
+  /api/v1/system/capabilities:
+    parameters:
+      - $ref: '#/components/parameters/XRequestID'
+    get:
+      tags: [System]
+      summary: Negotiate implemented server capabilities
+      description: >-
+        Clients use this response before enabling optional behavior. Feature
+        values describe only behavior implemented by the running build.
+      operationId: getSystemCapabilities
+      responses:
+        '200':
+          description: Implemented capabilities and version identifiers.
+          headers:
+            X-API-Version:
+              $ref: '#/components/headers/XAPIVersion'
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestID'
+            X-Server-Version:
+              $ref: '#/components/headers/XServerVersion'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Capabilities'
+              example:
+                server_version: 0.1.0-dev
+                api_version: v1
+                contract_version: 0.1.0
+                features:
+                  - capability_negotiation
+                  - health_checks
+                  - request_ids
+                  - structured_errors
+        '405':
+          $ref: '#/components/responses/MethodNotAllowedResponse'
+components:
+  parameters:
+    XRequestID:
+      name: X-Request-ID
+      in: header
+      required: false
+      description: Optional caller correlation ID; oversized values are replaced.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 200
+  headers:
+    XAPIVersion:
+      description: Stable API namespace served by this process.
+      schema:
+        type: string
+        const: v1
+    XRequestID:
+      description: Caller-provided or server-generated request correlation ID.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 200
+    XServerVersion:
+      description: Semantic server build version.
+      schema:
+        type: string
+        minLength: 1
+  responses:
+    HealthResponse:
+      description: The process can serve the requested health probe.
+      headers:
+        X-API-Version:
+          $ref: '#/components/headers/XAPIVersion'
+        X-Request-ID:
+          $ref: '#/components/headers/XRequestID'
+        X-Server-Version:
+          $ref: '#/components/headers/XServerVersion'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Health'
+          example:
+            status: ok
+            service: VoiceAsset
+            timestamp: '2026-07-16T03:00:00Z'
+    MethodNotAllowedResponse:
+      description: The route exists but does not support this HTTP method.
+      headers:
+        Allow:
+          description: Allowed HTTP method.
+          schema:
+            type: string
+            const: GET
+        X-API-Version:
+          $ref: '#/components/headers/XAPIVersion'
+        X-Request-ID:
+          $ref: '#/components/headers/XRequestID'
+        X-Server-Version:
+          $ref: '#/components/headers/XServerVersion'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    Health:
+      type: object
+      additionalProperties: false
+      required: [status, service, timestamp]
+      properties:
+        status:
+          type: string
+          const: ok
+        service:
+          type: string
+          minLength: 1
+        timestamp:
+          type: string
+          format: date-time
+    Capabilities:
+      type: object
+      additionalProperties: false
+      required:
+        - server_version
+        - api_version
+        - contract_version
+        - features
+      properties:
+        server_version:
+          type: string
+          description: Semantic version or development build identifier.
+          minLength: 1
+        api_version:
+          type: string
+          description: Stable REST namespace.
+          const: v1
+        contract_version:
+          type: string
+          description: Version of this OpenAPI contract.
+          const: 0.1.0
+        features:
+          type: array
+          description: Sorted identifiers for behavior implemented by this build.
+          uniqueItems: true
+          items:
+            type: string
+            pattern: '^[a-z][a-z0-9_]*$'
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required: [code, message, request_id]
+          properties:
+            code:
+              type: string
+              pattern: '^[a-z][a-z0-9_]*$'
+            message:
+              type: string
+              minLength: 1
+            request_id:
+              type: string
+              minLength: 1

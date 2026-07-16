@@ -1,0 +1,15 @@
+DROP TRIGGER IF EXISTS transcript_revision_immutable_guard ON transcript_revisions;
+DROP FUNCTION IF EXISTS reject_transcript_revision_mutation();
+DROP TRIGGER IF EXISTS asset_object_immutable_guard ON asset_objects;
+DROP FUNCTION IF EXISTS reject_asset_object_mutation();
+DROP TABLE IF EXISTS system_settings;
+DROP TABLE IF EXISTS audit_logs;
+DROP TABLE IF EXISTS provider_profiles;
+DROP TABLE IF EXISTS jobs;
+DROP TABLE IF EXISTS transcript_revisions;
+DROP TABLE IF EXISTS transcripts;
+DROP TABLE IF EXISTS asset_objects;
+DROP TABLE IF EXISTS assets;
+DROP TABLE IF EXISTS memberships;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS workspaces;
