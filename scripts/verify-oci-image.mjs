@@ -5,6 +5,7 @@ import { closeSync, fstatSync, lstatSync, openSync, readSync } from 'node:fs'
 
 const blockSize = 512
 const maxMetadataBytes = 2 * 1024 * 1024
+const indexMediaType = 'application/vnd.oci.image.index.v1+json'
 const manifestMediaType = 'application/vnd.oci.image.manifest.v1+json'
 const configMediaType = 'application/vnd.oci.image.config.v1+json'
 
@@ -179,6 +180,19 @@ function validateImage(metadata, blobSizes, descriptor, expected) {
   }
 }
 
+function validateImageIndex(metadata, blobSizes, index, expected, field) {
+  if (
+    !index ||
+    typeof index !== 'object' ||
+    index.schemaVersion !== 2 ||
+    index.mediaType !== indexMediaType ||
+    !Array.isArray(index.manifests)
+  ) {
+    fail(`${field} is not an OCI image index`)
+  }
+  for (const descriptor of index.manifests) validateImage(metadata, blobSizes, descriptor, expected)
+}
+
 const [archive, image, version, commit] = process.argv.slice(2)
 if (!archive || !image || !version || !commit || process.argv.length !== 6) {
   fail('usage: verify-oci-image.mjs <archive> <image-name> <version> <commit>')
@@ -201,7 +215,15 @@ const expected = {
   platforms: new Set(['linux/amd64', 'linux/arm64']),
   seen: new Set(),
 }
-for (const descriptor of index.manifests) validateImage(metadata, blobSizes, descriptor, expected)
+if (index.manifests.length === 1 && index.manifests[0].mediaType === indexMediaType) {
+  const nestedDescriptor = index.manifests[0]
+  if (nestedDescriptor.platform) fail('nested OCI index descriptor must not declare a platform')
+  const nestedPath = validateDescriptor(nestedDescriptor, blobSizes, 'nested OCI index')
+  const nestedIndex = parseJSON(metadata.get(nestedPath), 'nested OCI index')
+  validateImageIndex(metadata, blobSizes, nestedIndex, expected, 'nested OCI index')
+} else {
+  validateImageIndex(metadata, blobSizes, index, expected, 'index.json')
+}
 if (expected.seen.size !== 2 || [...expected.platforms].some((platform) => !expected.seen.has(platform))) {
   fail('OCI image must contain exactly linux/amd64 and linux/arm64')
 }

@@ -8,6 +8,9 @@ Versioning.
 
 ### Added
 
+- Updated the OCI release verifier to safely dereference the standard nested
+  image-index layout emitted by hosted BuildKit while retaining exact
+  `linux/amd64` and `linux/arm64` platform checks.
 - Hardened the hosted multi-platform OCI release step by disabling default
   BuildKit attestations and explicitly selecting OCI media types before the
   strict two-platform archive verifier runs.
