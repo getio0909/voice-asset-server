@@ -34,28 +34,28 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: ${{ github.repository_owner }}/voice-asset-console
-          ref: ${{ inputs.component_ref || 'main' }}
+          ref: ${{ inputs.component_ref || github.head_ref || 'main' }}
           path: workspace/voice-asset-console
           persist-credentials: false
       - name: Check out Android
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: ${{ github.repository_owner }}/voice-asset-android
-          ref: ${{ inputs.component_ref || 'main' }}
+          ref: ${{ inputs.component_ref || github.head_ref || 'main' }}
           path: workspace/voice-asset-android
           persist-credentials: false
       - name: Check out MCP
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: ${{ github.repository_owner }}/voice-asset-mcp
-          ref: ${{ inputs.component_ref || 'main' }}
+          ref: ${{ inputs.component_ref || github.head_ref || 'main' }}
           path: workspace/voice-asset-mcp
           persist-credentials: false
       - name: Check out Site
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: ${{ github.repository_owner }}/voice-asset-site
-          ref: ${{ inputs.component_ref || 'main' }}
+          ref: ${{ inputs.component_ref || github.head_ref || 'main' }}
           path: workspace/voice-asset-site
           persist-credentials: false
       - name: Set up Go
