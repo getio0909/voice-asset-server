@@ -26,6 +26,9 @@ Unchecked items are not complete and must not be inferred from project files.
 - [x] Hosted Docker Compose startup smoke covers Postgres, migrations, API,
       Worker, Console gateway, readiness, and capabilities; the smoke uses
       isolated project volumes and cleans them after the run
+- [x] Hosted Compose Phase 1 HTTP smoke covers owner bootstrap/login, multipart
+      WAV upload and completion, Worker Mock ASR, normalized transcript retrieval,
+      and range/HEAD playback through the Console gateway (`29664615096`)
 - [x] Mock ASR and Mock LLM end-to-end path
 - [x] Alibaba Cloud and Tencent Cloud fixture and opt-in live-test paths
 - [x] Immutable transcript correction, review, and approval flow
