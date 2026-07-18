@@ -89,9 +89,17 @@ docker run --rm --network host \
 docker run --rm -v "$work_root:/work" \
   "$image" /app/adminctl backup-verify --backup /work/backups/backup
 
-if ! cmp --silent "$work_root/objects/fixture.bin" "$work_root/restore-parent/objects/fixture.bin"; then
+compare_restored_fixture() {
+  docker run --rm --user 0:0 -v "$work_root:/work" \
+    --entrypoint sh "$image" \
+    -c 'cmp --silent /work/objects/fixture.bin /work/restore-parent/objects/fixture.bin'
+}
+
+if ! compare_restored_fixture; then
   printf 'restored storage fixture mismatch; files found under target:\n' >&2
-  find "$work_root/restore-parent" -maxdepth 4 -type f -print >&2
+  docker run --rm --user 0:0 -v "$work_root:/work" \
+    --entrypoint sh "$image" \
+    -c 'find /work/restore-parent -maxdepth 4 -type f -print' >&2 || true
   exit 1
 fi
 source_migrations=$(query_database "$source_database" 'SELECT count(*) FROM voiceasset_schema_migrations')
