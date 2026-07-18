@@ -15,7 +15,10 @@ trap cleanup EXIT
 
 # The CI image tags are built by the workflow. Keeping the project name explicit
 # prevents this smoke from touching a developer's unrelated Compose volumes.
-compose up --detach --wait --wait-timeout 180 api worker gateway
+compose up --detach worker
+compose up --detach --wait --wait-timeout 180 api gateway
+
+compose ps --status running --services | grep -Fx worker >/dev/null
 
 curl --fail --silent --show-error --retry 20 --retry-all-errors --retry-delay 2 \
   http://127.0.0.1:8080/readyz >/dev/null
