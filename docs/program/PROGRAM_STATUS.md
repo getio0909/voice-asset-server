@@ -1,6 +1,6 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-18 16:02 UTC
+- Last updated: 2026-07-18 18:13 UTC
 - Current phase: Phase 6 gap closure (pre-v1). Contract `0.22.0` and migration
   18 add the authenticated WebSocket realtime transcription upgrade using the
   `voiceasset.realtime.v1` subprotocol, bounded text event frames, resumable
@@ -44,7 +44,14 @@
   `3D2076862E3F0BD6E6031B0210D5B190CA15AF16FC1CE1F0B08A0A2F3A722BE6`.
   The Android CI now builds and uploads a signed release candidate for
   same-repository pull requests, while the tag workflow publishes a signed
-  draft prerelease. Hosted CI has not yet run for this new candidate.
+  draft prerelease. Final hosted Android CI run `29655228357` passed all six jobs,
+  including all 44 Hosted Emulator instrumentation tests and the signed release
+  candidate upload (`voice-asset-signed-release`). Server CI run `29652672572`
+  and Workspace Compatibility run `29652672615` also passed, including the real
+  runtime OCI image build and backup/restore smoke gate. The remote test host has
+  no container runtime installed, so the hosted OCI gate is the container evidence.
+  Physical-device execution remains user acceptance; no v1.0 tag or publication
+  claim is made yet.
   A read-only 15:13 UTC recheck still reports all five systemd units active,
   `/version` `workspace-20260718.11`, `/readyz` HTTP 200, and unchanged API,
   Worker, MCP, gateway, and public Caddy PIDs; no public Caddy reload occurred.
