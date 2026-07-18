@@ -1,6 +1,22 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-18 19:46 UTC
+- Last updated: 2026-07-18 22:10 UTC
+- Release-candidate update: Server PRs #7, #8, #9, and #10, Console PRs #2-
+  #5, Android PR #2, and Site PR #6 are merged into their default branches.
+  The immutable `v0.1.0-rc.5` tags now point at Server `efc1db1`, Console
+  `b3d602a`, Android `d03b61c`, MCP `8d34906a`, and Site `372c43a`; Server
+  (`29661350978`), Console `29661351093` (rerun job `88128128013`), Android
+  (`29661351299`), MCP (`29661351168`), and Site (`29661351335`) hosted release
+  runs pass. The draft prereleases retain the Server OCI tar
+  `sha256:3a299378bdf5e43d603bd8e3b09b9ef18a67fb6723f41893b6aa7c0a19fd6dc9`,
+  Console OCI tar
+  `sha256:e20fd671d30e02eecc5bfeca4d10bd6774f96c9a94deaa066f0264190fecf051`,
+  Android APK/AAB/SHA256SUMS
+  `sha256:aa0903f0dcf78d9b6b6ea8052ae6617d5da7694308c9762ef343f5c7b41cbf89`,
+  `sha256:5b1c159dc3bd7943a2cb527522c518ec91338aa30d793534ff63fb9fc0876909`,
+  `sha256:de8219918e1adfeebfe9c16745d33bd619b1a09cdc06d364ade972c049d0a182`,
+  MCP Linux archive `sha256:f2434b015e8d4149665a4e17841ff24663bb1d1e9cf150dcb9cdc9c50a4e020b`,
+  and Site archive `sha256:59cb9a15e47750eab6c20c70ecad233c064e3b5d1ed4546f293c194e1afdaa95`.
 - Current phase: Phase 6 gap closure (pre-v1; coordinated `0.22.0` candidate
   merged). Contract `0.22.0` and migration
   18 add the authenticated WebSocket realtime transcription upgrade using the
@@ -887,9 +903,9 @@
   are unchanged.
 - The full v1.0 product scope is not complete. Remaining gates include the
   Android physical-device/process-death/network-recovery acceptance, Docker
-  Compose runtime and retained Linux OCI image digests, QR scanning and the
-  remaining safe configuration surfaces, broader policy/device models, and
-  the complete A–E acceptance scenarios in `GOAL.md`.
+  Compose runtime, QR scanning and the remaining safe configuration surfaces,
+  broader policy/device models, and the complete A–E acceptance scenarios in
+  `GOAL.md`. Hosted Linux OCI candidate builds and retained digests now pass.
 - Alibaba and Tencent offline fixture gates pass. Tencent Flash has current
   credential-backed live WAV evidence; Aliyun still lacks a complete supported
   credential pair, so no Aliyun real-cloud success is claimed.
@@ -900,9 +916,9 @@
 
 Close the remaining release gates in this order: run the Android physical-device
 acceptance (or obtain an accelerated emulator), execute the full A–E scenarios,
-run hosted Tag workflows and retain immutable OCI image digests, complete QR and
-remaining safe-configuration flows, and finish Aliyun live evidence if a valid
-credential pair is available. Update the release checklist only from retained
+validate Docker Compose runtime behavior, complete QR and remaining
+safe-configuration flows, and finish Aliyun live evidence if a valid credential
+pair is available. Update the release checklist only from retained
 test/deployment evidence; do not tag or publish `v1.0.0` before every required
 item is checked.
 
@@ -910,7 +926,8 @@ item is checked.
 
 No blocker remains for Mock-based development or the merged default-branch CI.
 Docker is unavailable on this Windows host and on the Debian test host, so
-Compose runtime behavior and retained hosted Tag image digests remain open.
+Compose runtime behavior remains open; hosted Tag OCI builds and their retained
+digests are green.
 The Google Android SDK is installed at `C:\tools\Android\Sdk`; JVM, lint,
 release, signing, and Hosted Emulator gates pass, but local hardware acceleration
 is unavailable and no physical device has been attached. Enabling a Windows

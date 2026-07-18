@@ -16,6 +16,9 @@ Unchecked items are not complete and must not be inferred from project files.
 - [x] Cross-repository compatibility matrix is proven by integration tests
       (the eight-fixture local gate and hosted five-checkout run
       `29655623342` pass)
+- [x] Hosted `v0.1.0-rc.5` release-candidate workflows pass for all five
+      repositories (`29661350978`, `29661351093`, `29661351299`, `29661351168`,
+      and `29661351335`); each remains a draft prerelease
 
 ## Product
 
@@ -84,9 +87,11 @@ Unchecked items are not complete and must not be inferred from project files.
       Windows, and macOS AMD64/ARM64
 - [x] Deterministic, checksum-verified Console and Site static archives with
       safe extraction and exact-content comparison
-- [ ] Linux amd64 and arm64 Server/Console container images (digest-pinned Tag
-      workflows and strict OCI validators pass locally; actual hosted Tag builds
-      and retained image digests remain open)
+- [x] Linux amd64 and arm64 Server/Console container images (hosted `rc.5`
+      builds and strict OCI validators pass; retained OCI tar digests are
+      `sha256:3a299378bdf5e43d603bd8e3b09b9ef18a67fb6723f41893b6aa7c0a19fd6dc9`
+      and
+      `sha256:e20fd671d30e02eecc5bfeca4d10bd6774f96c9a94deaa066f0264190fecf051`)
 - [x] Android unsigned APK/AAB candidates, checksums, SBOM verification, and
       external signing instructions
 

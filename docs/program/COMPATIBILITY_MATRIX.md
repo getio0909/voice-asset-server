@@ -33,6 +33,7 @@ contract and integration tests.
 | `0.1.0-dev+phase6.20260718.4` | `v1` | `0.19.0` | `0.1.0` 107 tests/7 mocked Chromium          | `0.1.0` 134 JVM/41 compiled  | `0.1.0` test/vet/build        | `0.1.0` 83-op deterministic | Phase 6 deployed safe-settings candidate |
 | `0.1.0-dev+phase6.20260718.5` | `v1` | `0.20.0` | `0.1.0` 107 tests/build                      | `0.1.0` JVM/lint/APK/AAB/41 compiled | `0.1.0` test/vet/build        | `0.1.0` 84-op deterministic | Phase 6 deployed personal-notification candidate |
 | `0.1.0-dev+workspace.20260718.11` | `v1` | `0.22.0` | `0.1.0` 110 tests/build/Webhook UI | `0.1.0` JVM/lint/APK/AAB/43 compiled | `0.1.0` test/vet/build | `0.1.0` 91-op deterministic | Phase 6 merged realtime/Webhook/S3/OTel release candidate |
+| `0.1.0-rc.5` | `v1` | `0.22.0` | `0.1.0` hosted OCI/static archive | `0.1.0` signed APK/AAB + hosted tests | `0.1.0` hosted archive | `0.1.0` hosted archive | Hosted draft release candidate; v1.0 product gates remain open |
 
 Contract `0.22.0` additionally passed migration 18, the Webhook repository,
 WebSocket transport tests, and authenticated acceptance on the isolated `10443`
