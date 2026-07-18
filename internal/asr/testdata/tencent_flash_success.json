@@ -1,0 +1,32 @@
+{
+  "request_id": "fixture-request-tencent",
+  "code": 0,
+  "message": "success",
+  "audio_duration": 2380,
+  "flash_result": [
+    {
+      "text": "语音资产欢迎您。",
+      "channel_id": 0,
+      "sentence_list": [
+        {
+          "text": "语音资产欢迎您。",
+          "start_time": 0,
+          "end_time": 2380,
+          "speaker_id": 1,
+          "word_list": [
+            {
+              "word": "语音资产",
+              "start_time": 0,
+              "end_time": 1200
+            },
+            {
+              "word": "欢迎您。",
+              "start_time": 1200,
+              "end_time": 2300
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

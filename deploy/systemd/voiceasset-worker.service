@@ -1,0 +1,34 @@
+[Unit]
+Description=VoiceAsset transcription worker
+Requires=voiceasset-migrate.service
+Wants=network-online.target
+After=network-online.target voiceasset-migrate.service
+
+[Service]
+Type=simple
+User=voiceasset
+Group=voiceasset
+WorkingDirectory=/data/apps/caddy/voice
+EnvironmentFile=/data/apps/caddy/voice/config/server.env
+ExecStart=/data/apps/caddy/voice/bin/voiceasset-worker --heartbeat 1s
+Restart=on-failure
+RestartSec=3s
+TimeoutStopSec=20s
+UMask=0027
+NoNewPrivileges=yes
+PrivateDevices=yes
+PrivateTmp=yes
+ProtectControlGroups=yes
+ProtectHome=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectSystem=strict
+ReadWritePaths=/data/apps/caddy/voice/objects
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target

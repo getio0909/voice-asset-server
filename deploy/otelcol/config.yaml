@@ -1,0 +1,30 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 127.0.0.1:14318
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 64
+    spike_limit_mib: 16
+  batch:
+    send_batch_size: 32
+    timeout: 1s
+
+exporters:
+  file:
+    path: /data/apps/caddy/voice/otel/traces.jsonl
+
+extensions:
+  health_check:
+    endpoint: 127.0.0.1:13133
+
+service:
+  extensions: [health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [file]

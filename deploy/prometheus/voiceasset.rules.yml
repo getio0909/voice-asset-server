@@ -1,0 +1,57 @@
+groups:
+  - name: voiceasset-api
+    interval: 15s
+    rules:
+      - alert: VoiceAssetAPIDown
+        expr: up{job="voiceasset-api"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: voiceasset-api
+        annotations:
+          summary: VoiceAsset API metrics target is down
+          description: Prometheus has failed to scrape the VoiceAsset API metrics endpoint for at least two minutes.
+
+      - alert: VoiceAssetAPIHigh5xxRate
+        expr: |
+          (
+            sum(rate(voiceasset_http_requests_total{job="voiceasset-api",status=~"5.."}[5m]))
+            /
+            clamp_min(sum(rate(voiceasset_http_requests_total{job="voiceasset-api"}[5m])), 0.001)
+          ) > 0.05
+        for: 10m
+        labels:
+          severity: warning
+          service: voiceasset-api
+        annotations:
+          summary: VoiceAsset API 5xx rate is above five percent
+          description: More than five percent of measured API requests have returned 5xx responses for at least ten minutes.
+
+      - alert: VoiceAssetAPIHighP95Latency
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum by (le) (
+              rate(voiceasset_http_request_duration_seconds_bucket{job="voiceasset-api"}[5m])
+            )
+          ) > 0.5
+        for: 10m
+        labels:
+          severity: warning
+          service: voiceasset-api
+        annotations:
+          summary: VoiceAsset API P95 latency is above 500 milliseconds
+          description: The measured API P95 latency has exceeded 500 milliseconds for at least ten minutes.
+
+  - name: voiceasset-prometheus
+    interval: 15s
+    rules:
+      - alert: VoiceAssetPrometheusConfigReloadFailed
+        expr: prometheus_config_last_reload_successful{job="voiceasset-prometheus"} == 0
+        for: 5m
+        labels:
+          severity: warning
+          service: voiceasset-prometheus
+        annotations:
+          summary: VoiceAsset Prometheus configuration reload failed
+          description: Prometheus has reported an unsuccessful configuration reload for at least five minutes.

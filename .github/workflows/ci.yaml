@@ -45,7 +45,11 @@ jobs:
       - name: Set up Node for OpenAPI lint
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '24'
+          node-version: "24"
+      - name: Test workspace compatibility verifier
+        run: node --test scripts/verify-workspace-compatibility.test.mjs
+      - name: Test OCI release verifier
+        run: node --test scripts/verify-oci-image.test.mjs scripts/container-release.test.mjs
       - name: Verify formatting
         shell: bash
         run: |
@@ -59,6 +63,29 @@ jobs:
         run: go test -race -coverprofile=coverage.out ./...
       - name: Lint OpenAPI 3.1 contract
         run: npx --yes @redocly/cli@2.39.0 lint contracts/openapi.yaml
+      - name: Validate Prometheus config and rules
+        shell: bash
+        env:
+          PROMETHEUS_VERSION: 3.13.1
+          PROMETHEUS_LINUX_AMD64_SHA256: 962b812371aff838d152b6ff2d56fdb7a6396f5542f48ebf73421b9721f0d103
+        run: |
+          set -euo pipefail
+          repo_root="$PWD"
+          tmpdir="$(mktemp -d)"
+          trap 'rm -rf "$tmpdir"' EXIT
+          archive="prometheus-${PROMETHEUS_VERSION}.linux-amd64.tar.gz"
+          curl --fail --location --proto '=https' --tlsv1.2 \
+            --output "$tmpdir/$archive" \
+            "https://github.com/prometheus/prometheus/releases/download/v${PROMETHEUS_VERSION}/${archive}"
+          printf '%s  %s\n' \
+            "$PROMETHEUS_LINUX_AMD64_SHA256" \
+            "$tmpdir/$archive" | sha256sum --check --strict
+          tar -xzf "$tmpdir/$archive" -C "$tmpdir"
+          promtool="$tmpdir/prometheus-${PROMETHEUS_VERSION}.linux-amd64/promtool"
+          cd "$repo_root/deploy/prometheus"
+          "$promtool" check config prometheus.yml
+          "$promtool" check rules voiceasset.rules.yml
+          "$promtool" test rules voiceasset.rules.test.yml
       - name: Build release commands
         shell: bash
         run: |
@@ -67,6 +94,18 @@ jobs:
           go build -trimpath -o .build/voiceasset-worker ./cmd/worker
           go build -trimpath -o .build/voiceasset-migrate ./cmd/migrate
           go build -trimpath -o .build/voiceasset-adminctl ./cmd/adminctl
+      - name: Validate Compose model
+        env:
+          VOICEASSET_CONSOLE_CONTEXT: .
+        run: docker compose -f deploy/compose/compose.yaml config --quiet
+      - name: Build runtime image
+        run: docker build --tag voiceasset-server:ci .
+      - name: Run real backup and clean-restore smoke test
+        env:
+          VOICEASSET_CI_DATABASE_PASSWORD: voiceasset-ci-only
+        run: |
+          chmod +x scripts/ci-backup-restore.sh
+          ./scripts/ci-backup-restore.sh voiceasset-server:ci
       - name: Upload binaries and coverage
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:

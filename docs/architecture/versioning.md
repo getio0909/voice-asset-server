@@ -8,7 +8,7 @@ The Server publishes three distinct values:
 
 - `server_version`: the binary release, for example `1.2.3`;
 - `api_version`: the stable URL namespace, currently `v1`;
-- `contract_version`: the OpenAPI document version, currently `0.1.0`.
+- `contract_version`: the OpenAPI document version, currently `0.22.0` locally.
 
 Additive contract changes increment the contract minor version. Compatible
 clarifications and fixes increment the patch version. A breaking wire change

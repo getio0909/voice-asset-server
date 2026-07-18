@@ -1,0 +1,213 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://voiceasset.example/contracts/realtime-events.schema.json",
+  "title": "VoiceAsset realtime transcription events",
+  "description": "Version 1 authenticated WebSocket control and PCM frame events.",
+  "oneOf": [
+    { "$ref": "#/$defs/start" },
+    { "$ref": "#/$defs/resume" },
+    { "$ref": "#/$defs/audio" },
+    { "$ref": "#/$defs/finish" },
+    { "$ref": "#/$defs/heartbeat" },
+    { "$ref": "#/$defs/heartbeatAck" },
+    { "$ref": "#/$defs/ready" },
+    { "$ref": "#/$defs/ack" },
+    { "$ref": "#/$defs/partialTranscript" },
+    { "$ref": "#/$defs/finalTranscript" },
+    { "$ref": "#/$defs/error" },
+    { "$ref": "#/$defs/closed" }
+  ],
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "protocolVersion": {
+      "const": "1"
+    },
+    "sessionID": {
+      "type": "object",
+      "required": ["session_id"],
+      "properties": {
+        "session_id": { "$ref": "#/$defs/uuid" }
+      }
+    },
+    "start": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "protocol_version",
+        "client_session_id",
+        "idempotency_key",
+        "encoding",
+        "sample_rate_hz",
+        "channels",
+        "frame_duration_ms",
+        "language"
+      ],
+      "properties": {
+        "type": { "const": "start" },
+        "protocol_version": { "$ref": "#/$defs/protocolVersion" },
+        "client_session_id": { "$ref": "#/$defs/uuid" },
+        "idempotency_key": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "encoding": { "const": "pcm_s16le" },
+        "sample_rate_hz": { "enum": [8000, 16000, 24000, 48000] },
+        "channels": { "const": 1 },
+        "frame_duration_ms": { "type": "integer", "minimum": 20, "maximum": 100 },
+        "language": { "type": "string", "minLength": 2, "maxLength": 35 },
+        "provider_profile_id": { "$ref": "#/$defs/uuid" },
+        "hotword_set_id": { "$ref": "#/$defs/uuid" }
+      }
+    },
+    "resume": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "protocol_version", "session_id", "last_acknowledged_sequence"],
+      "properties": {
+        "type": { "const": "resume" },
+        "protocol_version": { "$ref": "#/$defs/protocolVersion" },
+        "session_id": { "$ref": "#/$defs/uuid" },
+        "last_acknowledged_sequence": { "type": "integer", "minimum": -1 }
+      }
+    },
+    "audio": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "session_id", "sequence", "captured_at_ms", "pcm_base64"],
+      "properties": {
+        "type": { "const": "audio" },
+        "session_id": { "$ref": "#/$defs/uuid" },
+        "sequence": { "type": "integer", "minimum": 0 },
+        "captured_at_ms": { "type": "integer", "minimum": 0 },
+        "pcm_base64": { "type": "string", "minLength": 4, "maxLength": 87384 }
+      }
+    },
+    "finish": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "session_id",
+        "final_sequence",
+        "captured_duration_ms",
+        "client_archive_sha256"
+      ],
+      "properties": {
+        "type": { "const": "finish" },
+        "session_id": { "$ref": "#/$defs/uuid" },
+        "final_sequence": { "type": "integer", "minimum": -1 },
+        "captured_duration_ms": { "type": "integer", "minimum": 0 },
+        "client_archive_sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "heartbeat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "session_id", "sent_at_ms"],
+      "properties": {
+        "type": { "const": "heartbeat" },
+        "session_id": { "$ref": "#/$defs/uuid" },
+        "sent_at_ms": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "heartbeatAck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "session_id", "server_at"],
+      "properties": {
+        "type": { "const": "heartbeat_ack" },
+        "session_id": { "$ref": "#/$defs/uuid" },
+        "server_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "ready": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "protocol_version",
+        "session_id",
+        "next_sequence",
+        "max_frame_bytes",
+        "heartbeat_interval_ms",
+        "expires_at"
+      ],
+      "properties": {
+        "type": { "const": "ready" },
+        "protocol_version": { "$ref": "#/$defs/protocolVersion" },
+        "session_id": { "$ref": "#/$defs/uuid" },
+        "next_sequence": { "type": "integer", "minimum": 0 },
+        "max_frame_bytes": { "type": "integer", "minimum": 1, "maximum": 65536 },
+        "heartbeat_interval_ms": {
+          "type": "integer",
+          "minimum": 1000,
+          "description": "Send an audio or heartbeat event within three consecutive intervals or the Server interrupts the stream for bounded reconnect."
+        },
+        "expires_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "ack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "session_id", "acknowledged_sequence", "received_bytes"],
+      "properties": {
+        "type": { "const": "ack" },
+        "session_id": { "$ref": "#/$defs/uuid" },
+        "acknowledged_sequence": { "type": "integer", "minimum": -1 },
+        "received_bytes": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "partialTranscript": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "session_id", "revision", "text", "final_through_ms"],
+      "properties": {
+        "type": { "const": "partial_transcript" },
+        "session_id": { "$ref": "#/$defs/uuid" },
+        "revision": { "type": "integer", "minimum": 1 },
+        "text": { "type": "string", "maxLength": 262144 },
+        "final_through_ms": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "finalTranscript": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "session_id", "text", "language", "provider_id"],
+      "properties": {
+        "type": { "const": "final_transcript" },
+        "session_id": { "$ref": "#/$defs/uuid" },
+        "text": { "type": "string", "minLength": 1, "maxLength": 262144 },
+        "language": { "type": "string", "minLength": 2, "maxLength": 35 },
+        "provider_id": { "type": "string", "minLength": 1, "maxLength": 64 }
+      }
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "code", "message", "retriable"],
+      "properties": {
+        "type": { "const": "error" },
+        "session_id": { "$ref": "#/$defs/uuid" },
+        "code": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "message": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "retriable": { "type": "boolean" },
+        "expected_sequence": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "closed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "session_id", "reason"],
+      "properties": {
+        "type": { "const": "closed" },
+        "session_id": { "$ref": "#/$defs/uuid" },
+        "reason": { "enum": ["completed", "failed", "expired", "client_closed"] }
+      }
+    }
+  }
+}

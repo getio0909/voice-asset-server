@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily reload of the VoiceAsset gateway's reused public certificate
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+RandomizedDelaySec=30m
+Unit=voiceasset-gateway-cert-reload.service
+
+[Install]
+WantedBy=timers.target

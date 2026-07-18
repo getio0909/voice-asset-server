@@ -1,0 +1,30 @@
+{
+  "task_id": "fixture-task-aliyun",
+  "status": 20000000,
+  "message": "SUCCESS",
+  "flash_result": {
+    "duration": 2386,
+    "sentences": [
+      {
+        "text": "语音资产欢迎您。",
+        "words": [
+          {
+            "text": "语音资产",
+            "begin_time": "0",
+            "end_time": "1200",
+            "punc": ""
+          },
+          {
+            "text": "欢迎您",
+            "begin_time": "1200",
+            "end_time": "2300",
+            "punc": "。"
+          }
+        ],
+        "begin_time": 0,
+        "end_time": 2386,
+        "channel_id": 0
+      }
+    ]
+  }
+}
