@@ -114,6 +114,7 @@ jobs:
           VOICEASSET_IMAGE_TAG: ci
           VOICEASSET_CONSOLE_IMAGE_TAG: ci
           VOICEASSET_CONSOLE_CONTEXT: ${{ github.workspace }}/voice-asset-console
+          VOICEASSET_PUBLIC_ORIGIN: http://127.0.0.1:8080
         run: |
           chmod +x scripts/ci-compose-smoke.sh
           ./scripts/ci-compose-smoke.sh
