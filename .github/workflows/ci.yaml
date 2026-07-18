@@ -37,6 +37,13 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Check out Console for Compose smoke
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: ${{ github.repository_owner }}/voice-asset-console
+          ref: main
+          path: voice-asset-console
+          persist-credentials: false
       - name: Set up Go
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
         with:
@@ -96,10 +103,20 @@ jobs:
           go build -trimpath -o .build/voiceasset-adminctl ./cmd/adminctl
       - name: Validate Compose model
         env:
-          VOICEASSET_CONSOLE_CONTEXT: .
+          VOICEASSET_CONSOLE_CONTEXT: ${{ github.workspace }}/voice-asset-console
         run: docker compose -f deploy/compose/compose.yaml config --quiet
       - name: Build runtime image
         run: docker build --tag voiceasset-server:ci .
+      - name: Build Console image for Compose smoke
+        run: docker build --tag voiceasset-console:ci "$GITHUB_WORKSPACE/voice-asset-console"
+      - name: Run Compose end-to-end smoke test
+        env:
+          VOICEASSET_IMAGE_TAG: ci
+          VOICEASSET_CONSOLE_IMAGE_TAG: ci
+          VOICEASSET_CONSOLE_CONTEXT: ${{ github.workspace }}/voice-asset-console
+        run: |
+          chmod +x scripts/ci-compose-smoke.sh
+          ./scripts/ci-compose-smoke.sh
       - name: Run real backup and clean-restore smoke test
         env:
           VOICEASSET_CI_DATABASE_PASSWORD: voiceasset-ci-only
