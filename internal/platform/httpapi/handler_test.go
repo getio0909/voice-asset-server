@@ -1,13 +1,23 @@
 package httpapi
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
 	"testing"
 
 	"github.com/getio0909/voice-asset-server/internal/platform/product"
+)
+
+const (
+	httpAssetID      = "10000000-0000-4000-8000-000000000081"
+	httpOtherAssetID = "10000000-0000-4000-8000-000000000082"
+	httpUploadID     = "20000000-0000-4000-8000-000000000081"
+	httpJobID        = "30000000-0000-4000-8000-000000000081"
+	httpRevisionID   = "40000000-0000-4000-8000-000000000081"
 )
 
 func TestHealthEndpoints(t *testing.T) {
@@ -30,6 +40,85 @@ func TestHealthEndpoints(t *testing.T) {
 			}
 			if response.Status != "ok" || response.Service != "VoiceAsset" || response.Timestamp == "" {
 				t.Fatalf("unexpected response: %+v", response)
+			}
+		})
+	}
+}
+
+func TestVersionEndpointReturnsBuildInfo(t *testing.T) {
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodGet, "/version", nil)
+
+	NewHandler("VoiceAsset", nil).ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+	var response product.BuildInfo
+	if err := json.Unmarshal(recorder.Body.Bytes(), &response); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if response.ServerVersion != product.ServerVersion || response.Commit != product.Commit {
+		t.Fatalf("unexpected build info: %+v", response)
+	}
+}
+
+func TestReadinessFailsClosedWhenDependencyCheckFails(t *testing.T) {
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodGet, "/readyz", nil)
+	handler := NewApplicationHandler(Options{
+		BrandName: "VoiceAsset",
+		ReadinessCheck: func(context.Context) error {
+			return errors.New("dependency unavailable")
+		},
+	})
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusServiceUnavailable {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusServiceUnavailable)
+	}
+	var response errorResponse
+	if err := json.Unmarshal(recorder.Body.Bytes(), &response); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if response.Error.Code != "not_ready" || response.Error.Message != "service is not ready" {
+		t.Fatalf("unexpected response: %+v", response)
+	}
+}
+
+func TestLivenessDoesNotDependOnReadinessCheck(t *testing.T) {
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodGet, "/livez", nil)
+	handler := NewApplicationHandler(Options{
+		BrandName: "VoiceAsset",
+		ReadinessCheck: func(context.Context) error {
+			return errors.New("dependency unavailable")
+		},
+	})
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+}
+
+func TestResourceRoutesRejectNonUUIDIdentifiersBeforePersistence(t *testing.T) {
+	for _, path := range []string{
+		"/api/v1/assets/not-a-uuid",
+		"/api/v1/collections/not-a-uuid",
+		"/api/v1/assets/not-a-uuid/audio",
+		"/api/v1/uploads/not-a-uuid",
+		"/api/v1/transcription-jobs/not-a-uuid",
+		"/api/v1/transcript-revisions/not-a-uuid",
+	} {
+		t.Run(path, func(t *testing.T) {
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest(http.MethodGet, path, nil)
+			NewHandler("VoiceAsset", nil).ServeHTTP(recorder, request)
+			if recorder.Code != http.StatusNotFound {
+				t.Fatalf("status = %d, want %d", recorder.Code, http.StatusNotFound)
 			}
 		})
 	}
@@ -108,5 +197,18 @@ func TestOversizedRequestIDIsReplaced(t *testing.T) {
 	requestID := recorder.Header().Get("X-Request-ID")
 	if requestID == "" || len(requestID) > maxRequestIDLength {
 		t.Fatalf("X-Request-ID length = %d, want 1..%d", len(requestID), maxRequestIDLength)
+	}
+}
+
+func TestUnsafeRequestIDIsReplaced(t *testing.T) {
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodGet, "/healthz", nil)
+	request.Header.Set("X-Request-ID", "credential=not-a-request-id")
+
+	NewHandler("VoiceAsset", nil).ServeHTTP(recorder, request)
+
+	requestID := recorder.Header().Get("X-Request-ID")
+	if requestID == "" || requestID == "credential=not-a-request-id" || !validRequestID(requestID) {
+		t.Fatalf("X-Request-ID = %q, want generated safe identifier", requestID)
 	}
 }

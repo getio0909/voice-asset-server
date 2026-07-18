@@ -9,28 +9,56 @@ positions and durations are integer milliseconds.
 | --- | --- | --- |
 | Identity | User, Device, APIKey, Session | Authentication, revocation, and device identity |
 | Authorization | Workspace, Membership, Role | Tenant boundary, RBAC, and Agent scopes |
-| Asset | Asset, AssetObject, RecordingSession | Immutable originals and derived media lineage |
+| Asset | Asset, AssetObject, RecordingSession, AudioClip | Immutable originals and bounded derived media lineage |
 | Upload | UploadSession, UploadPart | Idempotent multipart transfer and integrity checks |
 | Organization | Collection, Tag, AssetTag, Annotation | User metadata without rewriting source media |
-| Transcript | Transcript, TranscriptRevision, TranscriptSegment, TranscriptWord, Speaker | Immutable transcription lineage and integer-ms timeline |
+| Transcript | Transcript, TranscriptRevision, TranscriptSegment, TranscriptWord, Speaker, TranscriptExport | Immutable transcription lineage, integer-ms timeline, and bounded exports |
 | Providers | ProviderProfile, ASRProfile, LLMProfile | Server-only configuration and encrypted secrets |
 | Vocabulary | HotwordSet, HotwordEntry, GlossarySet, GlossaryEntry | Separate pre-ASR hotwords and post-ASR corrections |
 | Execution | Job, JobAttempt, Webhook, Notification | Durable, retryable, cancellable asynchronous work |
-| Governance | AuditLog, SystemSetting | Append-only accountability and versioned settings |
+| Governance | AuditLog, SystemSetting (deployment-internal) | Append-only accountability; deployment settings are not exposed through workspace RBAC |
 
 ## State Machines
 
 Assets transition through `draft -> uploading -> processing -> ready`; failures
-enter `failed`, and deletion enters `trashed` before delayed physical removal.
+enter `failed`, reversible deletion enters `trashed`, and an Owner-confirmed
+permanent-deletion job uses the internal `purging` state before removing the
+asset graph and bytes.
 Jobs transition through `queued -> running -> succeeded`; retryable failures use
 `retry_wait`, terminal failures use `failed`, and requested cancellation uses
 `cancelled`. Transcripts progress by adding revisions of kind `raw_asr`,
 `normalized`, `llm_corrected`, `human_edited`, or `approved`; an earlier revision
 is never mutated to represent a later state.
+Memberships transition between `active` and `disabled` under exact-version
+Owner control. Disabling revokes current credentials; reactivation permits new
+credentials but never revives revoked sessions or API keys. At least one active
+Owner is retained. The workspace profile is also versioned: `admin:read`
+principals may read it, while only an Owner can rename it with an exact ETag;
+the change and audit entry commit in one transaction.
+System settings are split by authority before they receive a public API:
+deployment-global values remain operator-owned, while future workspace values
+require workspace-keyed versioned persistence. The legacy global key/value
+table is not writable through workspace RBAC. See ADR 0013.
 
 ## Persistence Coverage
 
 Migration `000001` establishes the tenant, asset, object, transcript revision,
-job, provider, audit, and settings backbone. Upload parts, detailed transcript
-segments, vocabulary entries, credentials, sessions, and notifications will be
-added with the vertical slice that owns their behavior and tests.
+job, provider, audit, and settings backbone. Migration `000002` adds sessions,
+resumable uploads, transcript segments, and job attempts. Migration `000003`
+adds encrypted ASR profiles, versioned hotwords, and provider health history.
+Migration `000004` adds versioned glossaries, LLM correction metadata, and
+append-only review decisions. Migration `000005` adds hashed, scoped API keys
+with expiry, revocation, last-use tracking, and lifecycle audits. Migration
+`000006` adds collections, tags, annotations, and their workspace constraints.
+Migration `000007` records expiring audio clips and transcript exports while
+their bytes remain in immutable object storage. Migration `000008` adds rotating
+device sessions, `000009` adds reversible asset lifecycle fields, `000010` adds
+full-text search, `000011` adds immutable waveform derivatives, and `000012`
+gates immutable-row deletion on the internal asset purge state. Migration
+`000013` adds durable real-time recording sessions, `000014` adds versioned
+membership status and stable update ordering, and `000015` adds transactional
+asset-change snapshots and permanent-deletion tombstones for incremental
+offline synchronization. Migration `000016` adds short-lived one-time device
+pairing, and `000017` adds immutable personal terminal-job notifications with
+transactional backfill and transition triggers. Outbound Webhook delivery
+remains outside the current persistence and network boundary.

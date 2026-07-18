@@ -1,0 +1,42 @@
+{
+	admin off
+	auto_https disable_redirects
+}
+
+{$VOICEASSET_SITE_ADDRESS} {
+	tls /data/apps/caddy/voice/config/tls/api.getio.net.crt /data/apps/caddy/voice/config/tls/api.getio.net.key
+	encode zstd gzip
+
+	@server path /api/* /healthz /readyz /version
+	handle @server {
+		reverse_proxy {$VOICEASSET_API_UPSTREAM}
+	}
+
+	@mcp path /mcp /mcp/*
+	handle @mcp {
+		reverse_proxy {$VOICEASSET_MCP_UPSTREAM} {
+			# Preserve the SDK's localhost DNS-rebinding guard behind this trusted proxy.
+			header_up Host {upstream_hostport}
+		}
+	}
+
+	handle {
+		root * {$VOICEASSET_CONSOLE_ROOT}
+		try_files {path} /index.html
+		file_server
+	}
+
+	header {
+		-Server
+		Content-Security-Policy "default-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; connect-src 'self'; img-src 'self' data:; media-src 'self' blob:; style-src 'self'; script-src 'self'"
+		Permissions-Policy "camera=(), geolocation=(), microphone=()"
+		Referrer-Policy "no-referrer"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+	}
+
+	log {
+		output stdout
+		format json
+	}
+}

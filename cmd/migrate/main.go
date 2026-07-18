@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -10,6 +11,7 @@ import (
 	"time"
 
 	"github.com/getio0909/voice-asset-server/internal/platform/migration"
+	"github.com/getio0909/voice-asset-server/internal/platform/product"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -27,8 +29,12 @@ func run(args []string, output io.Writer) error {
 	directory := flags.String("dir", envOrDefault("MIGRATIONS_DIR", "migrations"), "migration directory")
 	dryRun := flags.Bool("dry-run", false, "validate and list migrations without connecting")
 	timeout := flags.Duration("timeout", 2*time.Minute, "overall migration timeout")
+	showVersion := flags.Bool("version", false, "print version and exit")
 	if err := flags.Parse(args); err != nil {
 		return err
+	}
+	if *showVersion {
+		return json.NewEncoder(output).Encode(product.CurrentBuildInfo())
 	}
 
 	files, err := migration.Load(*directory)
@@ -49,12 +55,12 @@ func run(args []string, output io.Writer) error {
 	defer cancel()
 	connectionConfig, err := pgx.ParseConfig(*databaseURL)
 	if err != nil {
-		return fmt.Errorf("parse database URL: %w", err)
+		return fmt.Errorf("parse database URL")
 	}
 	connectionConfig.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
 	conn, err := pgx.ConnectConfig(ctx, connectionConfig)
 	if err != nil {
-		return fmt.Errorf("connect to PostgreSQL: %w", err)
+		return fmt.Errorf("connect to PostgreSQL")
 	}
 	defer conn.Close(context.Background())
 

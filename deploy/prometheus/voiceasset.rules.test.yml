@@ -1,0 +1,72 @@
+rule_files:
+  - voiceasset.rules.yml
+
+evaluation_interval: 1m
+
+tests:
+  - name: API target down fires after two minutes
+    interval: 1m
+    input_series:
+      - series: 'up{job="voiceasset-api",instance="127.0.0.1:18080",deployment="test-10443"}'
+        values: '0x4'
+    alert_rule_test:
+      - eval_time: 2m
+        alertname: VoiceAssetAPIDown
+        exp_alerts:
+          - exp_labels:
+              deployment: test-10443
+              instance: 127.0.0.1:18080
+              job: voiceasset-api
+              service: voiceasset-api
+              severity: critical
+            exp_annotations:
+              summary: VoiceAsset API metrics target is down
+              description: Prometheus has failed to scrape the VoiceAsset API metrics endpoint for at least two minutes.
+
+  - name: API target healthy does not alert
+    interval: 1m
+    input_series:
+      - series: 'up{job="voiceasset-api",instance="127.0.0.1:18080",deployment="test-10443"}'
+        values: '1x4'
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: VoiceAssetAPIDown
+        exp_alerts: []
+
+  - name: Sustained API error ratio fires
+    interval: 1m
+    input_series:
+      - series: 'voiceasset_http_requests_total{job="voiceasset-api",status="200"}'
+        values: '0+90x20'
+      - series: 'voiceasset_http_requests_total{job="voiceasset-api",status="500"}'
+        values: '0+10x20'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: VoiceAssetAPIHigh5xxRate
+        exp_alerts:
+          - exp_labels:
+              service: voiceasset-api
+              severity: warning
+            exp_annotations:
+              summary: VoiceAsset API 5xx rate is above five percent
+              description: More than five percent of measured API requests have returned 5xx responses for at least ten minutes.
+
+  - name: Sustained API P95 latency fires
+    interval: 1m
+    input_series:
+      - series: 'voiceasset_http_request_duration_seconds_bucket{job="voiceasset-api",le="0.5"}'
+        values: '0+90x20'
+      - series: 'voiceasset_http_request_duration_seconds_bucket{job="voiceasset-api",le="1"}'
+        values: '0+100x20'
+      - series: 'voiceasset_http_request_duration_seconds_bucket{job="voiceasset-api",le="+Inf"}'
+        values: '0+100x20'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: VoiceAssetAPIHighP95Latency
+        exp_alerts:
+          - exp_labels:
+              service: voiceasset-api
+              severity: warning
+            exp_annotations:
+              summary: VoiceAsset API P95 latency is above 500 milliseconds
+              description: The measured API P95 latency has exceeded 500 milliseconds for at least ten minutes.

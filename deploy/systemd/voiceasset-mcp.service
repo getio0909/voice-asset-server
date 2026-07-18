@@ -1,0 +1,32 @@
+[Unit]
+Description=VoiceAsset MCP Agent service
+Wants=network-online.target voiceasset-api.service
+After=network-online.target voiceasset-api.service
+
+[Service]
+Type=simple
+User=voiceasset
+Group=voiceasset
+WorkingDirectory=/data/apps/caddy/voice
+EnvironmentFile=/data/apps/caddy/voice/config/mcp.env
+ExecStart=/data/apps/caddy/voice/bin/voice-asset-mcp
+Restart=on-failure
+RestartSec=3s
+TimeoutStopSec=20s
+UMask=0027
+NoNewPrivileges=yes
+PrivateDevices=yes
+PrivateTmp=yes
+ProtectControlGroups=yes
+ProtectHome=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectSystem=strict
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target

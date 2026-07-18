@@ -1,12 +1,15 @@
 name: voiceasset
 
 x-app-common: &app-common
+  image: voiceasset-server:${VOICEASSET_IMAGE_TAG:-dev}
   build:
     context: ../..
     dockerfile: Dockerfile
   environment:
-    DATABASE_URL: postgres://${POSTGRES_USER:-voiceasset}:${POSTGRES_PASSWORD:-voiceasset-development-only}@postgres:5432/${POSTGRES_DB:-voiceasset}?sslmode=disable
+    DATABASE_URL: ${VOICEASSET_COMPOSE_DATABASE_URL:-postgres://voiceasset:voiceasset-development-only@postgres:5432/voiceasset?sslmode=disable}
     VOICEASSET_BRAND_NAME: ${VOICEASSET_BRAND_NAME:-VoiceAsset}
+    VOICEASSET_STORAGE_BACKEND: local
+    VOICEASSET_STORAGE_PATH: /app/var/objects
   depends_on:
     postgres:
       condition: service_healthy
@@ -50,16 +53,22 @@ services:
     <<: *app-common
     command: ["/app/api"]
     environment:
-      DATABASE_URL: postgres://${POSTGRES_USER:-voiceasset}:${POSTGRES_PASSWORD:-voiceasset-development-only}@postgres:5432/${POSTGRES_DB:-voiceasset}?sslmode=disable
+      DATABASE_URL: ${VOICEASSET_COMPOSE_DATABASE_URL:-postgres://voiceasset:voiceasset-development-only@postgres:5432/voiceasset?sslmode=disable}
       VOICEASSET_BRAND_NAME: ${VOICEASSET_BRAND_NAME:-VoiceAsset}
+      VOICEASSET_STORAGE_BACKEND: local
+      VOICEASSET_STORAGE_PATH: /app/var/objects
       VOICEASSET_HTTP_ADDR: :8080
+      VOICEASSET_PUBLIC_ORIGIN: ${VOICEASSET_PUBLIC_ORIGIN:-http://localhost:8080}
+      VOICEASSET_COOKIE_SECURE: ${VOICEASSET_COOKIE_SECURE:-false}
     depends_on:
       postgres:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully
     ports:
-      - "${VOICEASSET_PORT:-8080}:8080"
+      - "127.0.0.1:18080:8080"
+    volumes:
+      - object_data:/app/var
 
   worker:
     <<: *app-common
@@ -71,10 +80,53 @@ services:
         condition: service_completed_successfully
     healthcheck:
       disable: true
+    volumes:
+      - object_data:/app/var
+
+  admin:
+    <<: *app-common
+    entrypoint: ["/app/adminctl"]
+    command: ["capabilities"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    healthcheck:
+      disable: true
+    volumes:
+      - object_data:/app/var
+      - backup_data:/app/backups
+
+  gateway:
+    image: voiceasset-console:${VOICEASSET_CONSOLE_IMAGE_TAG:-dev}
+    build:
+      context: ${VOICEASSET_CONSOLE_CONTEXT:-../../../voice-asset-console}
+      dockerfile: Dockerfile
+    environment:
+      VOICEASSET_API_UPSTREAM: http://api:8080
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8080:8080"
+    networks:
+      - backend
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /config
+      - /data
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
 
 networks:
   backend:
     driver: bridge
 
 volumes:
+  backup_data:
+  object_data:
   postgres_data:

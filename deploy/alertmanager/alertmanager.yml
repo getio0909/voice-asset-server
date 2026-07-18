@@ -1,0 +1,15 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: voiceasset-local-journal
+  group_by: [alertname, service]
+  group_wait: 0s
+  group_interval: 1m
+  repeat_interval: 1h
+
+receivers:
+  - name: voiceasset-local-journal
+    webhook_configs:
+      - url: http://127.0.0.1:19193/alerts
+        send_resolved: true
