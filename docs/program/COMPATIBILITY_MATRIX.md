@@ -32,7 +32,7 @@ contract and integration tests.
 | `0.1.0-dev` (local follow-on) | `v1` | `0.18.0` | `0.1.0` 105 tests/6 mocked Chromium          | `0.1.0` 134 JVM/41 compiled  | `0.1.0` verify/race           | `0.1.0` 82-op deterministic | Phase 6 Android reconnect candidate |
 | `0.1.0-dev+phase6.20260718.4` | `v1` | `0.19.0` | `0.1.0` 107 tests/7 mocked Chromium          | `0.1.0` 134 JVM/41 compiled  | `0.1.0` test/vet/build        | `0.1.0` 83-op deterministic | Phase 6 deployed safe-settings candidate |
 | `0.1.0-dev+phase6.20260718.5` | `v1` | `0.20.0` | `0.1.0` 107 tests/build                      | `0.1.0` JVM/lint/APK/AAB/41 compiled | `0.1.0` test/vet/build        | `0.1.0` 84-op deterministic | Phase 6 deployed personal-notification candidate |
-| `0.1.0-dev+workspace.20260718.11` | `v1` | `0.22.0` | `0.1.0` 110 tests/build/Webhook UI | `0.1.0` JVM/lint/APK/AAB/43 compiled | `0.1.0` test/vet/build | `0.1.0` 91-op deterministic | Phase 6 deployed realtime/Webhook/S3/OTel candidate |
+| `0.1.0-dev+workspace.20260718.11` | `v1` | `0.22.0` | `0.1.0` 110 tests/build/Webhook UI | `0.1.0` JVM/lint/APK/AAB/43 compiled | `0.1.0` test/vet/build | `0.1.0` 91-op deterministic | Phase 6 merged realtime/Webhook/S3/OTel release candidate |
 
 Contract `0.22.0` additionally passed migration 18, the Webhook repository,
 WebSocket transport tests, and authenticated acceptance on the isolated `10443`
@@ -52,6 +52,12 @@ clean-instance backup/restore gates. The restore copied an original and an
 unfinished upload part into a new destination prefix, matched both SHA-256
 values and database inventories, and removed the temporary endpoint,
 credentials, database, and object data afterward.
+
+Current merged-branch evidence: Server CI `29655623363`, Workspace Compatibility
+`29655623342`, Console CI `29655632775`, Android CI `29655641245`, MCP CI
+`29655652283`, and Site CI `29655685955` all passed against their merged
+default-branch commits. The signed Android candidate run `29655228357` passed
+all six jobs and retains the unexpired `voice-asset-signed-release` artifact.
 
 Evidence: Server run `29472180011`, Console `29472656283`, Android
 `29473983934`, MCP `29472179992`, and Site `29472658617` all completed

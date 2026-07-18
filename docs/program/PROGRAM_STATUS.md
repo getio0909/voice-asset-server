@@ -1,7 +1,8 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-18 18:13 UTC
-- Current phase: Phase 6 gap closure (pre-v1). Contract `0.22.0` and migration
+- Last updated: 2026-07-18 18:47 UTC
+- Current phase: Phase 6 gap closure (pre-v1; coordinated `0.22.0` candidate
+  merged). Contract `0.22.0` and migration
   18 add the authenticated WebSocket realtime transcription upgrade using the
   `voiceasset.realtime.v1` subprotocol, bounded text event frames, resumable
   sessions, and the existing Mock ASR stream, alongside the Owner Session-only
@@ -16,6 +17,20 @@
   `.20260718.11`, contract `0.22.0`, schema 18, and the matching Console/MCP.
   Authenticated Webhook acceptance and a real TLS WebSocket start/audio/finish
   flow passed; unauthenticated access returns safe 401.
+  All five coordinated candidate PRs are now merged into their default
+  branches with no open PRs: Server `d82d8f42`, Console `84440f75`, Android
+  `40700d24`, MCP `8d34906a`, and Site `a3fef686`. Post-merge default-branch
+  CI passed for all five repositories; the Server compatibility rerun
+  `29655623342` passed after every merge was present, and the Android main
+  rerun `29655641245` passed all Hosted Emulator tests. The final signed
+  Android candidate run `29655228357` still retains an unexpired
+  `voice-asset-signed-release` artifact.
+  A 18:40 UTC read-only deployment audit still reports all six systemd units
+  active, `/version` `workspace-20260718.11`, `/readyz` HTTP 200, API/Worker/
+  MCP/gateway/Caddy PIDs `163047`/`163043`/`163048`/`146764`/`18314`, and zero
+  restarts. Port `10443` remains an independent listener; the public Caddyfile
+  hash is unchanged, and the reused `api.getio.net` certificate fingerprint is
+  `8C:AF:12:3A:DD:29:EC:A4:8B:B2:A9:D2:D4:01:85:A7:45:89:BB:D2:91:F8:FD:73:29:90:47:9C:C7:1D:E0:FF`.
   A 15:31 UTC rerun of `make compatibility` passed all eight workspace
   fixtures and the live five-repository capability/OpenAPI drift check; the
   Android change also passed JVM/Ktlint, Debug Lint, instrumentation Kotlin
@@ -181,8 +196,9 @@
   real local static-archive verification pass. This workstation has no Docker
   engine, so no OCI archive was built locally and the hosted immutable Tag gate
   remains open.
-- Corresponding commit: Phase 0 baselines listed below; Phase 1 through Phase 6
-  are uncommitted working slices
+- Corresponding commit: coordinated `0.22.0` candidate merged to all five
+  default branches; remaining work is release-gate closure rather than an
+  uncommitted candidate.
 - Estimated full-GOAL v1.0 completion: approximately 70%. The previous 96%
   estimate measured only the then-current release checklist and overstated the
   broader product scope
@@ -852,127 +868,47 @@
 
 ## In Progress
 
-- The deployed `0.20.0` personal notifications, administration reads/retry,
-  workspace/member lifecycles, personal password rotation, and incremental sync are complete, but
-  Phase 6 and the full v1.0 product scope are not.
-  The deployed
-  strict-TLS control-plane and isolated database asset-create/list/search
-  budgets plus the supported multipart/local-storage/Mock-Worker/audio and real
-  FFmpeg clip and waveform paths pass. The S3 metadata/configuration/driver
-  boundary and SDK-independent integrity semantics are implemented and ordinary
-  tests pass, but the concrete SDK-backed network adapter, compatibility
-  integration, executable backup/restore support, and representative
-  performance gate remain open before that path can be treated as release-grade.
-  A local, unadvertised real-time core now defines a strict JSON protocol,
-  durable migration 13 session state, idempotent ACK/reconnect/final replay,
-  Mock provider stream, authenticated pre-upgrade HTTP boundary, and Android
-  AudioRecord/WAV/replay/recovery layers. The concrete WebSocket upgrade
-  adapter, API startup wiring, real provider bridge, and device runtime E2E
-  remain open; the deployed migration 13 recording-session schema does not
-  imply a working WebSocket path. Other required
-  GOAL areas still missing or incomplete include outbound Webhook delivery and
-  broader Device/policy models, tenant-scoped settings and a separate operator write
-  authority, mobile QR pairing plus remaining safe configuration management,
-  broader Console settings/pairing flows, and media-pipeline orchestration. Console and Server
-  container builds/Compose recovery smoke also require a Docker-capable runner.
-- Durable operator-owned Prometheus retention and alert-rule evaluation are
-  deployed. OpenTelemetry trace export and an operator-selected outbound alert
-  notification receiver remain open.
-- The v1.0 release-notes draft is locally validated but intentionally remains
-  incomplete until the missing product scope and immutable release evidence are
-  available.
-- Alibaba and Tencent offline fixture gates pass. Tencent Flash also has a
-  current credential-backed live WAV success after using the account APPID
-  rather than its UIN; no stored credential was changed or exposed. The
-  available Alibaba environment still lacks one complete supported credential
-  pair, so no Aliyun real-cloud success is claimed.
-- The Phase 2 Android source plus the unexposed real-time core now pass
-  application compile, Ktlint, Debug/Release lint, 134 JVM tests, Room schema,
-  Debug/Test APK, unsigned release APK/AAB, checksum, and SBOM gates. Forty-one
-  instrumentation tests compile but are not claimed as executed. Profile upload
-  and batch-transcription policies now use separate WorkManager stages and
-  constraints; manual policies expose explicit start actions at durable checkpoints.
-  Runtime execution of Room, WorkManager, Keystore, MediaPlayer/audio focus,
-  microphone/service, Compose, process-death, and network-recovery tests still
-  needs an accelerated emulator or physical device. Access/refresh credentials
-  now rotate through one Keystore-backed session provider, while explicit
-  two-step device revocation rechecks the exact remote UUID and clears local
-  credentials only after successful current-device revocation.
-  The Compose topology still needs a Docker-capable runtime.
-- Android recording is now explicitly offline-first: the app opens with no
-  login or server connection required, the foreground service accepts a null
-  server profile, and device-local recordings remain visible, searchable,
-  playable, and exportable alongside the selected server's rows. Upload and
-  transcription actions remain disabled until a server profile is attached.
-  Focused JVM/instrumentation source tests, Ktlint, Debug/Release lint, Debug
-  APK, Release APK/AAB, and androidTest Kotlin compilation pass. The refreshed
-  development APK is signed with the debug key for manual installation; no
-  physical-device or process-death/network-recovery result is claimed yet.
+- The coordinated `0.22.0` slice is merged and deployed. It covers the
+  authenticated WebSocket realtime transport, signed Owner Webhooks, SDK-backed
+  S3 storage, and loopback OpenTelemetry/Alertmanager evidence. The isolated
+  `10443` deployment remains healthy; physical Caddy and the public certificate
+  are unchanged.
+- The full v1.0 product scope is not complete. Remaining gates include the
+  Android physical-device/process-death/network-recovery acceptance, Docker
+  Compose runtime and retained Linux OCI image digests, QR scanning and the
+  remaining safe configuration surfaces, broader policy/device models, and
+  the complete A–E acceptance scenarios in `GOAL.md`.
+- Alibaba and Tencent offline fixture gates pass. Tencent Flash has current
+  credential-backed live WAV evidence; Aliyun still lacks a complete supported
+  credential pair, so no Aliyun real-cloud success is claimed.
+- The release notes remain a draft and `v1.0.0` is intentionally untagged until
+  the unchecked release checklist items have retained evidence.
 
 ## Next Work
 
-Implement the remaining product scope before publication: complete the
-authenticated WebSocket upgrade/startup adapter and end-to-end real-time
-recording/transcription path, add Android QR scanning only after dependency
-approval, and implement the remaining safe-configuration management surfaces;
-then complete Console settings workflows. Add the
-SDK-backed S3 adapter, OpenTelemetry export, and an operator-
-selected outbound alert/Webhook notification path only with the required dependency and endpoint
-decisions. Then close the remaining runtime gates and run every hosted CI/release
-gate. Fix any Docker image, Compose, or Android device-runtime failures before
-declaring v1.0. With explicit authorization and elevation, enable Windows
-Hypervisor Platform or install the Android Emulator Hypervisor Driver; alternatively
-attach an API 26+ physical device. Then run the compiled Room, WorkManager,
-recording, transcript, and Compose instrumentation plus emulator kill/network
-recovery gates. With explicit production-dependency approval, add the
-S3-compatible adapter and representative performance gate. Complete Docker
-  upgrade validation, OpenTelemetry export, alert notification delivery, external Android and
-container signing, and hosted SBOM release gates.
+Close the remaining release gates in this order: run the Android physical-device
+acceptance (or obtain an accelerated emulator), execute the full A–E scenarios,
+run hosted Tag workflows and retain immutable OCI image digests, complete QR and
+remaining safe-configuration flows, and finish Aliyun live evidence if a valid
+credential pair is available. Update the release checklist only from retained
+test/deployment evidence; do not tag or publish `v1.0.0` before every required
+item is checked.
 
 ## Blockers
 
-No blocker for Mock-based Server/Console development. Docker is unavailable on
-this Windows host. The Google Android SDK is installed at
-`C:\tools\Android\Sdk`; user `ANDROID_HOME` and `ANDROID_SDK_ROOT` point there,
-and `gradlew.bat test lint assembleDebug` passes when the current process
-inherits those variables. The app/test APKs compile, but Windows Hypervisor
-Platform is disabled and the
-downloaded Android Emulator Hypervisor Driver package has not installed/enabled
-its privileged kernel driver. A bounded `-accel off`
-attempt registered `emulator-5554` but left all 56 QEMU threads suspended and the
-device offline, so the processes were stopped without changing system features.
-Enabling a system driver requires separate administrator authorization; a physical
-device is the non-system alternative. Hosted run `29473983934` proves
-only the committed Phase 0 Android baseline; it does not exercise the
-uncommitted Phase 2 source. The new image/Compose workflows are syntax-checked;
-Server/MCP Tag-release scripts pass local double-build verification, and the
-Android APK/AAB packaging verifier passes locally, but hosted Tag/SBOM runs
-cannot become accepted evidence
-until the coordinated slices are committed. The user-supplied PostgreSQL
-endpoint is reachable and integration tests use disposable schemas with
-redacted command output.
-Adding the concrete S3 driver requires one new production dependency. The
-candidate is the official Apache-2.0 AWS SDK for Go v2, pinned to modules
-released on 2026-07-01 rather than the 2026-07-16 S3 module; repository policy
-requires explicit approval before `go.mod` is changed.
-The reviewed real-time WebSocket candidate is `github.com/coder/websocket`
-`v1.8.15` (ISC, context-aware, zero third-party runtime dependencies). Repository
-policy requires explicit approval before it is added to `go.mod`; until then the
-authenticated pre-upgrade boundary remains deliberately unwired and unavailable.
-OpenTelemetry trace export likewise requires pinned production SDK/exporter
-modules plus an operator endpoint policy. The reviewed candidate is the official
-Apache-2.0 Go SDK/OTLP HTTP exporter `v1.44.0`, which supports this repository's
-Go baseline but also brings OTLP protobuf, gRPC transport/gateway, and related
-transitive modules. Those production dependencies have not been added without
-explicit approval.
-Windows Go race builds remain blocked by the host `cgo` toolchain. The exact
+No blocker remains for Mock-based development or the merged default-branch CI.
+Docker is unavailable on this Windows host and on the Debian test host, so
+Compose runtime behavior and retained hosted Tag image digests remain open.
+The Google Android SDK is installed at `C:\tools\Android\Sdk`; JVM, lint,
+release, signing, and Hosted Emulator gates pass, but local hardware acceleration
+is unavailable and no physical device has been attached. Enabling a Windows
+hypervisor/driver requires separate administrator authorization; a physical
+device is the non-system alternative. The user-supplied PostgreSQL endpoint is
+used only through disposable schemas with redacted output.
+Windows Go race builds remain blocked by the host cgo toolchain. The exact
 Server worktree passed `go test -race -count=1 ./...` on the Debian host with a
-checksum-verified official Go 1.26.5 Linux archive, while hosted CI must still
-repeat that gate after the slices are submitted.
-The latest authorization permits a GitHub v1.0 submission only after the product
-has reached v1.0, while v1.0 itself requires the current slices to pass hosted
-default-branch CI. A non-v1 release-candidate branch (without a Tag or release)
-therefore needs explicit push authorization to close that circular gate.
+checksum-verified official Go 1.26.5 Linux archive; the merged hosted gates cover
+the submitted candidate. No v1.0 tag or release has been created.
 
 Vendor live ASR is not a release-candidate blocker, by design. Tencent Flash
 has a current credential-backed live WAV success after the account APPID was
@@ -993,28 +929,32 @@ test deployment uses a dedicated loopback-only PostgreSQL 15 database.
 - Android: `https://github.com/getio0909/voice-asset-android`
 - MCP: `https://github.com/getio0909/voice-asset-mcp`
 - Site: `https://github.com/getio0909/voice-asset-site`
-- Console, Android, MCP, and Site record local Server contract `0.20.0`; Console,
+- Console, Android, MCP, and Site record Server contract `0.22.0`; Console,
   Android, and MCP reject incompatible API/contract versions.
 - `make compatibility` executes the real Server offline capability model and
   verifies exactly five repositories, every contract/API pin, 32 Console and
   six Android required features, MCP identity, and the byte-identical Site
-  OpenAPI copy. Eight isolated compatibility fixtures and `actionlint` pass; the
-  public-repository hosted workflow is authored but has not run for this slice.
+  OpenAPI copy. Eight isolated compatibility fixtures and `actionlint` pass;
+  hosted run `29655623342` also passed against the merged default branches.
 
 ## Recent Test Results
 
-Validated on Windows amd64 and the isolated Linux amd64 host on 2026-07-17–18 UTC:
+Validated on Windows amd64 and the isolated Linux amd64 host on 2026-07-17–18 UTC.
+The merged default-branch checks are also green: Server CI `29655623363`,
+Workspace Compatibility `29655623342`, Console CI `29655632775`, Android CI
+`29655641245`, MCP CI `29655652283`, and Site CI `29655685955`.
 
-- Server (Go 1.26.5): current local contract `0.20.0`, ordinary tests, vet, command builds,
+- Server (Go 1.26.5): current contract `0.22.0`, ordinary tests, vet, command builds,
   OpenAPI lint, module verification, backup/artifact tests, refresh/device-session
   unit/HTTP/real-PostgreSQL tests, full-text asset search, waveform generation/
   delivery, permanent asset purge, administration read/member/workspace models,
   session-only atomic password rotation and all-user-session revocation, and
-  migration 1–17 upgrade tests, transactional incremental-asset change and
+  migration 1–18 upgrade tests, transactional incremental-asset change and
   personal-notification tests, SSRF
   DNS-pin tests, and bounded
   local FFmpeg smoke plus repeated 12-clip and 12-waveform real performance runs
-  passed. After the storage-backend/context refactor and SDK-independent S3 core,
+  passed. After the storage-backend/context refactor and SDK-backed S3,
+  WebSocket, and Webhook slices,
   `go test -count=1 ./...`, `go vet ./...`, formatting, and diff checks passed
   again across commands, domains, E2E, and performance packages. The new
   workspace compatibility gate and all five repository/capability/OpenAPI drift
@@ -1035,14 +975,15 @@ Validated on Windows amd64 and the isolated Linux amd64 host on 2026-07-17–18 
   resume, every historical upgrade, and waveform-trigger preservation. The
   preceding `0.18.0` full Windows `-race` suite passed with process-local
   compiler flags. The installed GCC 16/cgo path now exits before compiling the
-  `0.20.0` race rerun, so this slice does not claim a fresh race pass.
+  `0.22.0` race rerun, so this slice does not claim a fresh Windows race pass.
   The latest waveform run reached 11.5 ops/s and 317.440 ms p95. The
   exact pre-waveform tree also passed
   `go test -race -count=1 ./...` on
   Linux. The runtime image/Compose CI gate is defined but not run locally because
   Docker is absent.
 - Console (Node 24.15, pnpm 11.5): Prettier, zero-warning ESLint, contract-pin
-  check, typecheck, 107 Vitest tests, production build, licenses, and seven local Chromium
+  check, typecheck, 110 Vitest tests, production build, licenses, Webhook UI,
+  and seven local Chromium
   catalog/detail, ASR-to-approved, API-key, Provider/Hotword, LLM/Glossary, and
   exact-ID permanent-purge plus administration, membership, workspace, and account Chromium
   workflows with zero axe violations passed. The membership flow proves
@@ -1070,7 +1011,7 @@ Validated on Windows amd64 and the isolated Linux amd64 host on 2026-07-17–18 
   The deployed `0.13.0` operations flow additionally validates Job filters,
   exact reduced-field allowlists, Audit Log, Dashboard/System Status, no
   unexpected writes, and empty Web Storage.
-- Android (JDK 21, Gradle 9.5): all 134 current JVM tests pass. They cover
+- Android (JDK 21, Gradle 9.5, contract `0.22.0`): all 134 current JVM tests pass. They cover
   strict pairing-URI parsing, one-time claim, Keystore persistence and profile-
   save compensation, complete encrypted access/refresh persistence, serialized
   native refresh, and revalidated two-step device-session revocation in addition
@@ -1081,14 +1022,15 @@ Validated on Windows amd64 and the isolated Linux amd64 host on 2026-07-17–18 
   network fallback. Their Ktlint checks, all
   app/main/test/androidTest Ktlint checks, debug runtime dependency resolution,
   secret-pattern scan, and the 141-component CycloneDX license gate passed on
-  the preceding `0.11.0` candidate. At contract `0.20.0`, all 134 JVM tests,
+  the preceding `0.11.0` candidate. At contract `0.22.0`, all 134 JVM tests,
   Ktlint, `lintDebug`, and `assembleDebug` pass. The SBOM policy recognizes
   only same-build `project_path` modules as first-party and still rejects a
   synthetic external dependency without license metadata.
   The all-module `test`, Ktlint, first-party core/app Release lint, Debug/Test APK,
   unsigned release APK/AAB, Room schema, and 141-component CycloneDX policy pass.
-  The 134 JVM tests have zero failures; 41 instrumentation test methods compile
-  but are not claimed as executed. Room migrations 2 through 4, atomic per-page cursor/cache
+  The 134 JVM tests have zero failures; 43 instrumentation methods compile and
+  the merged Hosted Emulator run executes all 44 instrumentation tests. Room
+  migrations 2 through 4, atomic per-page cursor/cache
   updates, deletion tombstones, capability-selected incremental/catalog paging,
   legacy catalog cursor bounds, and transaction rollback have dedicated coverage.
   The active profile's Room cache now feeds a
@@ -1134,8 +1076,9 @@ Validated on Windows amd64 and the isolated Linux amd64 host on 2026-07-17–18 
   but the emulator exits before ADB because no Android hypervisor driver is
   installed. The administrator-only recovery step is documented; microphone/
   device recovery remains open until it is executed.
-  Hosted run `29473983934` remains evidence only for the committed Phase 0 baseline.
-- MCP (Go 1.26.5, MCP Go SDK 1.6.1): the local `0.20.0` pin, ordinary tests, vet, build,
+  Hosted run `29655641245` passes on the merged Android default branch; the
+  signed release artifact is retained from run `29655228357`.
+- MCP (Go 1.26.5, MCP Go SDK 1.6.1): the `0.22.0` pin, ordinary tests, vet, build,
   12 read and nine opt-in write tools, five resources, six prompts,
   scope/failure/pagination/cancellation/rate-limit tests, and real stdio/HTTP
   tool calls passed. The deployed read-only test additionally proves strict CA,
@@ -1144,17 +1087,18 @@ Validated on Windows amd64 and the isolated Linux amd64 host on 2026-07-17–18 
   timecodes without creating artifacts. `govulncheck v1.6.0` reports no
   vulnerabilities after the bounded `golang.org/x/sys` `0.44.0` update. The
   preceding `0.18.0` Windows `-race` suite passes; the current cgo toolchain
-  blocks a fresh `0.20.0` race build before package compilation.
-- Site (Astro 7.1.0, Starlight 0.41.3, Sharp 0.35.3): local contract `0.20.0`,
-  generated 84-operation API reference, 25-page locale parity, type/content
+  blocks a fresh `0.22.0` race build before package compilation.
+- Site (Astro 7.1.0, Starlight 0.41.3, Sharp 0.35.3): contract `0.22.0`,
+  generated 91-operation API reference, 25-page locale parity, type/content
   checks, static build, accessibility structure, dependency audit, and links
   across 51 HTML files pass. Two complete release builds produced identical
   safe-extraction-verified archives with SHA-256
   `0f02adc4221f027e04820691af49a7a7a0e21b008f8d049eabbab47ba6d2bf44`.
-- Performance (isolated Debian `10443`): the system-trust/hostname, no-redirect,
+- Performance (isolated Debian `10443`, current `0.22.0` deployment): the
+  system-trust/hostname, no-redirect,
   no-ambient-proxy control-plane smoke completed 400 measured requests at
   concurrency 8 with zero failures, 42.0 req/s throughput, and 227.286 ms p95
-  against Server `0.1.0-dev+phase6.20260717.6`/contract `0.13.0`. The 500 ms p95
+  against the isolated VoiceAsset gateway. The 500 ms p95
   and 20 req/s acceptance budgets pass.
 - Performance (isolated PostgreSQL schema): with 5,000 seed rows, 100
   asset-create/audit transactions passed at 900.6 ops/s and 41.758 ms p95; 400
@@ -1165,12 +1109,12 @@ Validated on Windows amd64 and the isolated Linux amd64 host on 2026-07-17–18 
   Mock Worker/transcript operations passed at 53.6 ops/s and 107.040 ms p95;
   32 full-hash audio opens passed at 186.9 ops/s and 32.332 ms p95. All ran at
   concurrency 4 with zero failures and disposable state.
-- Migration (real PostgreSQL): versions 1–16 each upgrade independently to
-  version 17, and staged v1 → v2 → v17 preserves representative legacy data,
+- Migration (real PostgreSQL): versions 1–17 each upgrade independently to
+  version 18, and staged v1 → v2 → v18 preserves representative legacy data,
   the access-session/lifecycle backfills, and deterministically queues existing
   originals for waveform generation while backfilling active version-one
   memberships. `TestApplyAgainstPostgreSQL` also passes initial/idempotent
-  application, checksum-change rejection, and all seventeen down
+  application, checksum-change rejection, and all eighteen down
   migrations; every test schema is disposable.
 - The current post-slice read-only remote audit found API/worker/MCP/Prometheus/
   gateway PIDs `154944`/`154946`/`154945`/`136995`/`146764`, all active with zero
@@ -1184,8 +1128,8 @@ Validated on Windows amd64 and the isolated Linux amd64 host on 2026-07-17–18 
   valid through 2026-10-15 UTC). The public Caddyfile SHA-256 remains
   `b5758330e82589f33ead4f0cb4556544275f3adcbc9098268123e151dfc766ae`, and
   error-priority journal entries since this slice remain zero. The API reports
-  version `v0.1.0-dev+phase6.20260718.5`, contract `0.20.0`, 43 sorted
-  capabilities, and schema 17. The retained deployment archive has SHA-256
+  version `v0.1.0-dev+workspace.20260718.11`, contract `0.22.0`, 45 sorted
+  capabilities, and schema 18. The retained deployment archive has SHA-256
   `8f86c245063e244b57b0c2a779f8f099c78404342e3e7128ba3905eef5de23f5`;
   the exact pre-cutover backup archive is
   `c5848c1ffd2291093c02f467b2fb1a853ec98a5f0d05825a1deab2a936613abf`.
