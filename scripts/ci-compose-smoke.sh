@@ -9,7 +9,12 @@ compose() {
 }
 
 cleanup() {
+  status=$?
+  if [[ "$status" -ne 0 ]]; then
+    compose logs --no-color --tail=100 gateway api worker >&2 || true
+  fi
   compose down --volumes --remove-orphans
+  return "$status"
 }
 trap cleanup EXIT
 
