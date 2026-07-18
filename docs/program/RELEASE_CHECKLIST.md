@@ -23,6 +23,9 @@ Unchecked items are not complete and must not be inferred from project files.
 ## Product
 
 - [ ] Complete asset upload, storage, playback, and lifecycle
+- [x] Hosted Docker Compose startup smoke covers Postgres, migrations, API,
+      Worker, Console gateway, readiness, and capabilities; the smoke uses
+      isolated project volumes and cleans them after the run
 - [x] Mock ASR and Mock LLM end-to-end path
 - [x] Alibaba Cloud and Tencent Cloud fixture and opt-in live-test paths
 - [x] Immutable transcript correction, review, and approval flow
