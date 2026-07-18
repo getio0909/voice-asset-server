@@ -89,13 +89,19 @@ docker run --rm --network host \
 docker run --rm -v "$work_root:/work" \
   "$image" /app/adminctl backup-verify --backup /work/backups/backup
 
-# The storage root preserves the object-relative path during restore.
-cmp --silent "$work_root/objects/fixture.bin" "$work_root/restore-parent/objects/objects/fixture.bin"
+if ! cmp --silent "$work_root/objects/fixture.bin" "$work_root/restore-parent/objects/fixture.bin"; then
+  printf 'restored storage fixture mismatch; files found under target:\n' >&2
+  find "$work_root/restore-parent" -maxdepth 4 -type f -print >&2
+  exit 1
+fi
 source_migrations=$(query_database "$source_database" 'SELECT count(*) FROM voiceasset_schema_migrations')
 target_migrations=$(query_database "$target_database" 'SELECT count(*) FROM voiceasset_schema_migrations')
 source_tables=$(query_database "$source_database" "SELECT count(*) FROM pg_tables WHERE schemaname = 'public'")
 target_tables=$(query_database "$target_database" "SELECT count(*) FROM pg_tables WHERE schemaname = 'public'")
-[[ "$source_migrations" == "$target_migrations" ]]
-[[ "$source_tables" == "$target_tables" ]]
+if [[ "$source_migrations" != "$target_migrations" || "$source_tables" != "$target_tables" ]]; then
+  printf 'restored database shape mismatch: source migrations=%s target migrations=%s source tables=%s target tables=%s\n' \
+    "$source_migrations" "$target_migrations" "$source_tables" "$target_tables" >&2
+  exit 1
+fi
 
 printf 'CI_BACKUP_RESTORE_OK migrations=%s tables=%s files=1\n' "$source_migrations" "$source_tables"
