@@ -1,6 +1,15 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-18 22:10 UTC
+- Last updated: 2026-07-18 22:50 UTC
+- Compose gate update: Console PR #6 (`dbfb991`) clears the official Caddy
+  image's inherited `cap_net_bind_service` file capability before the image
+  runs as non-root with `no-new-privileges`. Server PR #12 (`8044833`) adds a
+  dedicated hosted Compose smoke. Its rerun in Server CI `29663709132` (job
+  `88130534343`) built the Console image, started Postgres, migrations, API,
+  Worker, and the Console gateway, verified readiness and capabilities through
+  the same-origin gateway, and removed its dedicated volumes. The first run's
+  `exec /usr/bin/caddy: operation not permitted` failure is retained as the
+  regression evidence that this fix closes.
 - Release-candidate update: Server PRs #7, #8, #9, and #10, Console PRs #2-
   #5, Android PR #2, and Site PR #6 are merged into their default branches.
   The immutable `v0.1.0-rc.5` tags now point at Server `efc1db1`, Console
@@ -902,10 +911,11 @@
   `10443` deployment remains healthy; physical Caddy and the public certificate
   are unchanged.
 - The full v1.0 product scope is not complete. Remaining gates include the
-  Android physical-device/process-death/network-recovery acceptance, Docker
-  Compose runtime, QR scanning and the remaining safe configuration surfaces,
-  broader policy/device models, and the complete A–E acceptance scenarios in
-  `GOAL.md`. Hosted Linux OCI candidate builds and retained digests now pass.
+  Android physical-device/process-death/network-recovery acceptance, the
+  complete Compose installation workflow beyond the hosted startup smoke, QR
+  scanning and the remaining safe configuration surfaces, broader policy/device
+  models, and the complete A–E acceptance scenarios in `GOAL.md`. Hosted Linux
+  OCI candidate builds and retained digests now pass.
 - Alibaba and Tencent offline fixture gates pass. Tencent Flash has current
   credential-backed live WAV evidence; Aliyun still lacks a complete supported
   credential pair, so no Aliyun real-cloud success is claimed.
@@ -916,18 +926,19 @@
 
 Close the remaining release gates in this order: run the Android physical-device
 acceptance (or obtain an accelerated emulator), execute the full A–E scenarios,
-validate Docker Compose runtime behavior, complete QR and remaining
-safe-configuration flows, and finish Aliyun live evidence if a valid credential
-pair is available. Update the release checklist only from retained
-test/deployment evidence; do not tag or publish `v1.0.0` before every required
-item is checked.
+complete the Compose installation workflow beyond the hosted startup smoke,
+complete QR and remaining safe-configuration flows, and finish Aliyun live
+evidence if a valid credential pair is available. Update the release checklist
+only from retained test/deployment evidence; do not tag or publish `v1.0.0`
+before every required item is checked.
 
 ## Blockers
 
 No blocker remains for Mock-based development or the merged default-branch CI.
-Docker is unavailable on this Windows host and on the Debian test host, so
-Compose runtime behavior remains open; hosted Tag OCI builds and their retained
-digests are green.
+Docker is unavailable on this Windows host and on the Debian test host, so a
+local Compose installation cannot be run here; hosted Server CI now proves the
+full startup path through the Console gateway, and hosted Tag OCI builds with
+their retained digests are green.
 The Google Android SDK is installed at `C:\tools\Android\Sdk`; JVM, lint,
 release, signing, and Hosted Emulator gates pass, but local hardware acceleration
 is unavailable and no physical device has been attached. Enabling a Windows
