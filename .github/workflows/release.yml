@@ -44,6 +44,8 @@ jobs:
         with:
           driver-opts: image=moby/buildkit@sha256:2f5adac4ecd194d9f8c10b7b5d7bceb5186853db1b26e5abd3a657af0b7e26ec
       - name: Build and verify AMD64 and ARM64 OCI image
+        env:
+          BUILDX_NO_DEFAULT_ATTESTATIONS: "1"
         shell: bash
         run: |
           image_tag=${GITHUB_REF_NAME//+/-}
