@@ -1,6 +1,6 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-18 22:50 UTC
+- Last updated: 2026-07-18 23:15 UTC
 - Compose gate update: Console PR #6 (`dbfb991`) clears the official Caddy
   image's inherited `cap_net_bind_service` file capability before the image
   runs as non-root with `no-new-privileges`. Server PR #12 (`8044833`) adds a
@@ -10,6 +10,13 @@
   the same-origin gateway, and removed its dedicated volumes. The first run's
   `exec /usr/bin/caddy: operation not permitted` failure is retained as the
   regression evidence that this fix closes.
+- Compose Phase 1 HTTP update: Server PR #14 was squash-merged as `7389d73`.
+  Hosted Server CI `29664615096` (job `88132843423`) now creates an isolated
+  CI-only owner, logs in through the Console gateway, uploads and completes a
+  two-part WAV, lets the real Worker run Mock ASR, verifies the normalized
+  transcript, and checks HTTP range/HEAD playback. The run also cleans its
+  Compose volumes. Workspace Compatibility `29664615120` (job `88133319517`)
+  passed after the five repositories exposed the same coordination ref.
 - Release-candidate update: Server PRs #7, #8, #9, and #10, Console PRs #2-
   #5, Android PR #2, and Site PR #6 are merged into their default branches.
   The immutable `v0.1.0-rc.5` tags now point at Server `efc1db1`, Console
@@ -912,7 +919,7 @@
   are unchanged.
 - The full v1.0 product scope is not complete. Remaining gates include the
   Android physical-device/process-death/network-recovery acceptance, the
-  complete Compose installation workflow beyond the hosted startup smoke, QR
+  complete Compose installation workflow beyond the hosted HTTP smoke, QR
   scanning and the remaining safe configuration surfaces, broader policy/device
   models, and the complete A–E acceptance scenarios in `GOAL.md`. Hosted Linux
   OCI candidate builds and retained digests now pass.
@@ -926,7 +933,7 @@
 
 Close the remaining release gates in this order: run the Android physical-device
 acceptance (or obtain an accelerated emulator), execute the full A–E scenarios,
-complete the Compose installation workflow beyond the hosted startup smoke,
+complete the Compose installation workflow beyond the hosted HTTP smoke,
 complete QR and remaining safe-configuration flows, and finish Aliyun live
 evidence if a valid credential pair is available. Update the release checklist
 only from retained test/deployment evidence; do not tag or publish `v1.0.0`
