@@ -10,11 +10,12 @@ Unchecked items are not complete and must not be inferred from project files.
       framework
 - [x] Cross-repository v1.0 release-notes draft distinguishes retained candidate
       evidence from every open publication gate
-- [ ] All five current release-candidate slices independently build and pass
-      default-branch CI
-- [ ] Cross-repository compatibility matrix is proven by integration tests
-      (the local runtime-capability workspace gate and its four failure-mode
-      tests pass; the new hosted five-checkout workflow has not run yet)
+- [x] All five current release-candidate slices independently build and pass
+      default-branch CI (merged runs `29655623363`, `29655632775`,
+      `29655641245`, `29655652283`, and `29655685955`)
+- [x] Cross-repository compatibility matrix is proven by integration tests
+      (the eight-fixture local gate and hosted five-checkout run
+      `29655623342` pass)
 
 ## Product
 
