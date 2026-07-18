@@ -8,6 +8,8 @@ Versioning.
 
 ### Added
 
+- Hardened the hosted multi-platform OCI release step by disabling default
+  BuildKit attestations before the strict two-platform archive verifier runs.
 - Fixed waveform Worker source resolution by selecting and preserving the
   original object's storage backend. Added a PostgreSQL regression assertion
   and reran the isolated live Console and MCP workflows: upload, Mock ASR,
