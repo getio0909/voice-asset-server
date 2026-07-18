@@ -57,7 +57,7 @@ jobs:
             --tag "voiceasset-server:$image_tag" \
             --provenance=false \
             --sbom=false \
-            --output "type=oci,dest=$archive" \
+            --output "type=oci,dest=$archive,oci-mediatypes=true" \
             .
           node scripts/verify-oci-image.mjs \
             "$archive" voiceasset-server "$GITHUB_REF_NAME" "$GITHUB_SHA"
