@@ -1,6 +1,6 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-18 18:47 UTC
+- Last updated: 2026-07-18 19:28 UTC
 - Current phase: Phase 6 gap closure (pre-v1; coordinated `0.22.0` candidate
   merged). Contract `0.22.0` and migration
   18 add the authenticated WebSocket realtime transcription upgrade using the
@@ -17,6 +17,14 @@
   `.20260718.11`, contract `0.22.0`, schema 18, and the matching Console/MCP.
   Authenticated Webhook acceptance and a real TLS WebSocket start/audio/finish
   flow passed; unauthenticated access returns safe 401.
+  A 19:28 UTC isolated live E2E run exposed and fixed a waveform Worker source
+  metadata bug: `waveform.PostgresOriginalRepository` omitted
+  `storage_backend`, so valid originals were rejected as `invalid_audio` and
+  the Console waveform endpoint returned 404. The focused PostgreSQL
+  regression test now passes, followed by three live Chromium workflows and
+  the live MCP search/Revision/exact-range/audit/revocation workflow. The
+  temporary schema and storage were removed; this fix was not deployed to
+  10443 yet.
   All five coordinated candidate PRs are now merged into their default
   branches with no open PRs: Server `d82d8f42`, Console `84440f75`, Android
   `40700d24`, MCP `8d34906a`, and Site `a3fef686`. Post-merge default-branch
