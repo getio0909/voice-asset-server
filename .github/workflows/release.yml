@@ -59,6 +59,7 @@ jobs:
             --sbom=false \
             --output "type=oci,dest=$archive,oci-mediatypes=true" \
             .
+          tar -xOf "$archive" index.json | jq -c '.manifests[] | {mediaType, platform, artifactType, annotations}'
           node scripts/verify-oci-image.mjs \
             "$archive" voiceasset-server "$GITHUB_REF_NAME" "$GITHUB_SHA"
       - name: Generate SPDX SBOM
