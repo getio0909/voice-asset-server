@@ -12,6 +12,19 @@ work_root="$PWD/.ci-backup-restore"
 source_url="postgres://$database_user:$database_password@$database_host:5432/$source_database?sslmode=disable"
 target_url="postgres://$database_user:$database_password@$database_host:5432/$target_database?sslmode=disable"
 
+remove_work_root() {
+  if [[ ! -d "$work_root" ]]; then
+    return
+  fi
+  # The runtime image may create backup files as a different UID on the
+  # bind-mounted workspace. Remove them through a short-lived root helper
+  # before the hosted runner tries to clean its checkout.
+  docker run --rm --user 0:0 -v "$work_root:/work" \
+    --entrypoint sh "$image" -c 'find /work -mindepth 1 -delete' \
+    >/dev/null 2>&1 || true
+  rm -rf -- "$work_root"
+}
+
 cleanup() {
   local status=$?
   trap - EXIT INT TERM
@@ -24,7 +37,7 @@ cleanup() {
       >/dev/null 2>&1
   fi
   if [[ "$work_root" == */.ci-backup-restore ]]; then
-    rm -rf -- "$work_root"
+    remove_work_root
   fi
   exit "$status"
 }
@@ -40,7 +53,7 @@ query_database() {
     --no-psqlrc --tuples-only --no-align --command "$query"
 }
 
-rm -rf -- "$work_root"
+remove_work_root
 mkdir -p "$work_root/objects" "$work_root/backups" "$work_root/restore-parent"
 chmod 0777 "$work_root" "$work_root/objects" "$work_root/backups" "$work_root/restore-parent"
 printf 'voiceasset backup fixture\n' >"$work_root/objects/fixture.bin"
