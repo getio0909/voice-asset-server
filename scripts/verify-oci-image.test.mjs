@@ -24,7 +24,10 @@ function addBlob(layout, bytes) {
   return { digest: `sha256:${digest}`, size: bytes.length }
 }
 
-function createFixture(t, { architectures = ['amd64', 'arm64'], user = '65532:65532', tamper = false } = {}) {
+function createFixture(
+  t,
+  { architectures = ['amd64', 'arm64'], user = '65532:65532', tamper = false, nested = false } = {},
+) {
   const root = mkdtempSync(join(tmpdir(), 'voiceasset-oci-test-'))
   t.after(() => rmSync(root, { force: true, recursive: true }))
   const layout = join(root, 'layout')
@@ -64,12 +67,27 @@ function createFixture(t, { architectures = ['amd64', 'arm64'], user = '65532:65
       platform: { architecture, os: 'linux' },
     })
   }
+  const indexManifests = nested
+    ? [
+        {
+          mediaType: 'application/vnd.oci.image.index.v1+json',
+          ...addBlob(
+            layout,
+            jsonBytes({
+              schemaVersion: 2,
+              mediaType: 'application/vnd.oci.image.index.v1+json',
+              manifests: descriptors,
+            }),
+          ),
+        },
+      ]
+    : descriptors
   writeFileSync(
     join(layout, 'index.json'),
     jsonBytes({
       schemaVersion: 2,
       mediaType: 'application/vnd.oci.image.index.v1+json',
-      manifests: descriptors,
+      manifests: indexManifests,
     }),
   )
   if (tamper) {
@@ -87,6 +105,12 @@ function verify(archive) {
 
 test('accepts a pinned non-root amd64 and arm64 OCI image', (t) => {
   const result = verify(createFixture(t))
+  assert.equal(result.status, 0, result.stderr)
+  assert.match(result.stdout, /verified OCI image/)
+})
+
+test('accepts a standard nested OCI image index', (t) => {
+  const result = verify(createFixture(t, { nested: true }))
   assert.equal(result.status, 0, result.stderr)
   assert.match(result.stdout, /verified OCI image/)
 })
