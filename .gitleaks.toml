@@ -1,0 +1,12 @@
+title = "VoiceAsset gitleaks configuration"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Synthetic API-key fixtures used only by deterministic tests"
+regexes = [
+  '''va_pat_12345678''',
+  '''va_pat_one_time_secret''',
+  '''va_test_token_with_sufficient_entropy''',
+]
