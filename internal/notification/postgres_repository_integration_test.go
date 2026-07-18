@@ -191,8 +191,8 @@ func notificationPoolBeforeLatest(t *testing.T) (*pgxpool.Pool, []migration.File
 			break
 		}
 	}
-	if notificationMigrationIndex < 1 || notificationMigrationIndex != len(files)-1 {
-		t.Fatalf("notification migration is not latest: %+v", files)
+	if notificationMigrationIndex < 1 {
+		t.Fatalf("notification migration is missing: %+v", files)
 	}
 	preNotificationFiles := files[:notificationMigrationIndex]
 	connection, err := pool.Acquire(ctx)
@@ -204,5 +204,5 @@ func notificationPoolBeforeLatest(t *testing.T) (*pgxpool.Pool, []migration.File
 		t.Fatalf("apply pre-notification migrations = (%d, %v)", applied, err)
 	}
 	connection.Release()
-	return pool, files
+	return pool, files[:notificationMigrationIndex+1]
 }
