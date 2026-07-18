@@ -36,11 +36,18 @@ ports 80 and 443.
   immutable waveforms; neither API nor Worker invokes it through a shell.
 
 The current verified candidate is Server API/Worker
-`v0.1.0-dev+workspace.20260718.11` and MCP `workspace-20260718.11`, contract
-`0.22.0`, migrations 1–18, and the matching Console bundle. The exact
+`v0.1.0-dev+workspace.20260718.12` (merged commit
+`294334993a64d6ccacb675d814e23441ee438830`) and MCP
+`workspace-20260718.11`, contract `0.22.0`, migrations 1–18, and the existing
+Console bundle. The waveform deployment preserves the original object's
+`storage_backend` when loading source metadata, fixing valid waveform jobs
+that previously failed as `invalid_audio`. No migration was required; schema
+18 remains active. The exact
 pre-cutover database/object backup is
 `/srv/voiceasset-backups/2026-07-18T1116Z-before-contract-0.22.0-r1`; the
-binary rollback snapshot is `backups/server-before-workspace-20260718.11`; it
+binary rollback snapshot for this cutover is
+`backups/server-before-waveform-20260718.12`; the prior
+`backups/server-before-workspace-20260718.11` snapshot remains available. It
 contains 42 database objects and 42 storage files. Migration 18 adds the
 signed outbound Webhook endpoint and delivery outbox. The authenticated
 WebSocket realtime transcription endpoint uses the `voiceasset.realtime.v1`
@@ -58,16 +65,19 @@ cursor binding, tamper rejection, `405` with `Allow: GET`, safe immutable read
 audits, logout, and post-logout denial. The same gateway completed an
 authenticated WebSocket start/audio/finish flow with the Mock ASR stream. API,
 Worker, MCP, gateway, Prometheus,
-and public Caddy are active after the cutover; the post-deploy error-priority
-journal is empty. Current API/Worker/MCP PIDs are `163047`, `163043`, and
+and public Caddy are active after the waveform cutover; `/readyz` returns HTTP
+200 and `/version` reports `0.1.0-dev+workspace.20260718.12` with commit
+`294334993a64d6ccacb675d814e23441ee438830`. The post-deploy error-priority
+journal is empty. Current API/Worker/MCP PIDs are `165453`, `165455`, and
 `163048`; public Caddy PID `18314` and independent gateway PID `146764`
-remained unchanged. The shared certificate fingerprint remains
+remained unchanged, with zero restarts. The shared certificate fingerprint
+remains
 `8CAF123ADD29ECA48BB2A9D2D40185A74589BBD291F8FD732990479CC71DE0FF`.
-The deployed API, Worker, migrate, adminctl, and MCP SHA-256 values are
-`ce999d176f8d869ec2fb0b8c24016109d2e723b25385eac2aded107c0dbaa86f`,
-`939bd1d2bb4e1660b308e9df54263e15de44c74e75aa4b8a16bdd4a31c87ff6f`,
-`af3c36eb4478d7fcaf3cc8b361db2445c076ec3cd4e9be840241131ddadc67d1`,
-`3d31a0341c2069afdf0e703f0adb013e477d14b6e92bad1be20ae26a61d79eb0`, and
+The post-cutover API, Worker, migrate, adminctl, and MCP SHA-256 values are
+`49e6623f05752a216408642a53a135bd1323326dd6dbb04d888a92a9a87762f2`,
+`a6ff920c02bde84c5030f07eb12fa47cfabe0b6c3ba427abf205ec3be72aa17c`,
+`75aba575155daf51267097eed35c1c37334c249fbc72d5c475d7568f8bf5ca3b`,
+`1b800421460a437dae0e74d5110f40e88cc3885594264f933ff11b03d21a0fed`, and
 `613e9233f91861c636a69451b85735dedc524dbd704d9dfa5ab10c4e87ccbe3e`.
 
 Earlier `0.13.0` acceptance established strict TLS/hostname validation,

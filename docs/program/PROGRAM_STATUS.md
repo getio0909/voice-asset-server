@@ -1,6 +1,6 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-18 19:28 UTC
+- Last updated: 2026-07-18 19:46 UTC
 - Current phase: Phase 6 gap closure (pre-v1; coordinated `0.22.0` candidate
   merged). Contract `0.22.0` and migration
   18 add the authenticated WebSocket realtime transcription upgrade using the
@@ -14,7 +14,8 @@
   Debug+Release lint, Debug+Release APK/AAB, and compilation of 43
   instrumentation methods; MCP test/vet/build passes; Site's 91-operation/
   51-page static gate passes. The isolated deployment now runs
-  `.20260718.11`, contract `0.22.0`, schema 18, and the matching Console/MCP.
+  Server API/Worker `.20260718.12`, contract `0.22.0`, schema 18, and the
+  existing Console/MCP `.20260718.11` artifacts.
   Authenticated Webhook acceptance and a real TLS WebSocket start/audio/finish
   flow passed; unauthenticated access returns safe 401.
   A 19:28 UTC isolated live E2E run exposed and fixed a waveform Worker source
@@ -23,21 +24,24 @@
   the Console waveform endpoint returned 404. The focused PostgreSQL
   regression test now passes, followed by three live Chromium workflows and
   the live MCP search/Revision/exact-range/audit/revocation workflow. The
-  temporary schema and storage were removed; this fix was not deployed to
-  10443 yet.
+  temporary schema and storage were removed. PR #5 was squash-merged as
+  Server commit `29433499`, and the fix was deployed to the isolated 10443
+  gateway as `0.1.0-dev+workspace.20260718.12`; `/readyz` returns HTTP 200 and
+  `/version` reports the merged commit.
   All five coordinated candidate PRs are now merged into their default
-  branches with no open PRs: Server `d82d8f42`, Console `84440f75`, Android
+  branches with no open PRs: Server `29433499`, Console `84440f75`, Android
   `40700d24`, MCP `8d34906a`, and Site `a3fef686`. Post-merge default-branch
   CI passed for all five repositories; the Server compatibility rerun
   `29655623342` passed after every merge was present, and the Android main
   rerun `29655641245` passed all Hosted Emulator tests. The final signed
   Android candidate run `29655228357` still retains an unexpired
   `voice-asset-signed-release` artifact.
-  A 18:40 UTC read-only deployment audit still reports all six systemd units
-  active, `/version` `workspace-20260718.11`, `/readyz` HTTP 200, API/Worker/
-  MCP/gateway/Caddy PIDs `163047`/`163043`/`163048`/`146764`/`18314`, and zero
-  restarts. Port `10443` remains an independent listener; the public Caddyfile
-  hash is unchanged, and the reused `api.getio.net` certificate fingerprint is
+  A 19:45 UTC post-deploy audit reports all six systemd units active,
+  `/version` `0.1.0-dev+workspace.20260718.12` with commit `29433499`,
+  `/readyz` HTTP 200, API/Worker/MCP/gateway/Caddy PIDs
+  `165453`/`165455`/`163048`/`146764`/`18314`, and zero restarts. Port `10443`
+  remains an independent listener; the public Caddyfile hash is unchanged, and
+  the reused `api.getio.net` certificate fingerprint is
   `8C:AF:12:3A:DD:29:EC:A4:8B:B2:A9:D2:D4:01:85:A7:45:89:BB:D2:91:F8:FD:73:29:90:47:9C:C7:1D:E0:FF`.
   A 15:31 UTC rerun of `make compatibility` passed all eight workspace
   fixtures and the live five-repository capability/OpenAPI drift check; the
