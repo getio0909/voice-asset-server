@@ -8,6 +8,11 @@ Versioning.
 
 ### Added
 
+- Fixed waveform Worker source resolution by selecting and preserving the
+  original object's storage backend. Added a PostgreSQL regression assertion
+  and reran the isolated live Console and MCP workflows: upload, Mock ASR,
+  waveform playback, correction/review/approval, scoped MCP reads, audit
+  attribution, and credential revocation all pass.
 - Added a loopback-only OpenTelemetry Collector 0.155.0 and Alertmanager
   0.33.1 test-host deployment. OTLP traces are written to a protected local
   journal, Prometheus alerts are delivered through a bounded receiver that

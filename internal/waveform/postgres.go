@@ -32,7 +32,8 @@ func (repository *PostgresOriginalRepository) GetOriginal(
 	var container *string
 	var sampleRate *int
 	err := repository.pool.QueryRow(ctx, `
-		SELECT object.id::text, object.asset_id::text, object.storage_key, object.mime_type,
+		SELECT object.id::text, object.asset_id::text, object.storage_backend,
+		       object.storage_key, object.mime_type,
 		       object.container, object.sample_rate, object.file_size, object.sha256,
 		       COALESCE(object.duration_ms, asset.duration_ms, 0)
 		FROM asset_objects object
@@ -40,7 +41,7 @@ func (repository *PostgresOriginalRepository) GetOriginal(
 		WHERE object.asset_id = $1 AND asset.workspace_id = $2
 		  AND object.kind = 'original'`, assetID, workspaceID,
 	).Scan(
-		&result.ObjectID, &result.AssetID, &result.StorageKey, &result.MIMEType,
+		&result.ObjectID, &result.AssetID, &result.StorageBackend, &result.StorageKey, &result.MIMEType,
 		&container, &sampleRate, &result.Size, &result.SHA256, &result.DurationMS,
 	)
 	if errors.Is(err, pgx.ErrNoRows) {
