@@ -89,7 +89,8 @@ docker run --rm --network host \
 docker run --rm -v "$work_root:/work" \
   "$image" /app/adminctl backup-verify --backup /work/backups/backup
 
-cmp --silent "$work_root/objects/fixture.bin" "$work_root/restore-parent/objects/fixture.bin"
+# The storage root preserves the object-relative path during restore.
+cmp --silent "$work_root/objects/fixture.bin" "$work_root/restore-parent/objects/objects/fixture.bin"
 source_migrations=$(query_database "$source_database" 'SELECT count(*) FROM voiceasset_schema_migrations')
 target_migrations=$(query_database "$target_database" 'SELECT count(*) FROM voiceasset_schema_migrations')
 source_tables=$(query_database "$source_database" "SELECT count(*) FROM pg_tables WHERE schemaname = 'public'")
