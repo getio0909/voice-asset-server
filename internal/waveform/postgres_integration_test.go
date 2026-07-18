@@ -47,6 +47,15 @@ func TestPostgresCommitterPublishesWaveformJobObjectAndAuditAtomically(t *testin
 			t.Fatalf("seed waveform commit: %v", err)
 		}
 	}
+	sourceRepository := waveform.NewPostgresOriginalRepository(pool)
+	original, err := sourceRepository.GetOriginal(ctx, workspaceID, assetID)
+	if err != nil {
+		t.Fatalf("GetOriginal() error = %v", err)
+	}
+	if original.StorageBackend != storage.BackendLocal || original.StorageKey != "objects/source.wav" ||
+		original.MIMEType != "audio/wav" || original.Container != "wav" || original.Size != 64 {
+		t.Fatalf("GetOriginal() = %+v", original)
+	}
 	now := time.Now().UTC()
 	jobRepository := job.NewPostgresRepository(pool)
 	claimed, err := jobRepository.Claim(ctx, job.ClaimParams{
