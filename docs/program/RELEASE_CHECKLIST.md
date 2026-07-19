@@ -41,6 +41,9 @@ Unchecked items are not complete and must not be inferred from project files.
       speed, Owner-only exact-ID permanent deletion with durable status/retry,
       immediate post-purge in-memory result removal, mocked Chromium, deployed
       permanent-purge Chromium, and axe pass)
+- [x] One-time pairing QR slice: Console in-memory QR rendering and Android
+      Google Code Scanner QR flow with paste fallback pass hosted PR CI;
+      physical-device scanning remains acceptance evidence
 - [ ] Android offline recording, recovery, upload, and sync
 - [x] MCP stdio and Streamable HTTP tools, resources, scopes, and audit
 - [x] MCP asset search, specified Revision, exact time citation, scope denial,

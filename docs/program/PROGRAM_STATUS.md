@@ -1,6 +1,16 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-18 23:15 UTC
+- Last updated: 2026-07-19 00:13 UTC
+- QR pairing update: Android PR #3 was squash-merged as `73a7254`, and its
+  hosted CI rerun `29665995831` passed dependency review, SBOM/license checks,
+  JVM/Ktlint/lint/build validation, signed release packaging, secret scanning,
+  and all 44 Hosted Emulator tests. Console PR #7 was squash-merged as
+  `ed5b7f8`; its hosted PR CI `29665815142` and post-merge main CI
+  `29666366670` passed. The Console now renders the one-time pairing payload
+  as an in-memory QR code, while Android uses the Google Code Scanner QR-only
+  flow and keeps paste as a fallback. A physical-device scan remains user
+  acceptance; the post-merge Android main run `29666362632` exposed an
+  intermittent pre-existing Compose test failure and is being rerun.
 - Compose gate update: Console PR #6 (`dbfb991`) clears the official Caddy
   image's inherited `cap_net_bind_service` file capability before the image
   runs as non-root with `no-new-privileges`. Server PR #12 (`8044833`) adds a
