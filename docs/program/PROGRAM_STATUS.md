@@ -1,6 +1,6 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 16:24 UTC
+- Last updated: 2026-07-19 16:44 UTC
 
 - Android recorder-first CI acceptance (2026-07-19 16:03 UTC): PR #13 branch
   `agent/recorder-first-ux` at commit `d060892` passed GitHub Actions run
@@ -37,6 +37,14 @@
   `d6c8df6` passed `ktlintCheck`, `:app:testDebugUnitTest`, `:app:lintDebug`,
   and `git diff --check` on the workstation. No device was attached, so this
   local check does not replace the explicit physical-device acceptance gate.
+
+- Android acceptance evidence documentation (2026-07-19 16:44 UTC): PR #14
+  merged as `5bad9912a1c81245fd7a0cc910a7e7b41c5992d`. The README now provides
+  a credential-free UTC evidence template for device/build details, offline
+  recording, playback/export, pairing, recovery, and reconnect results. It
+  explicitly excludes passwords, pairing URIs, tokens, session IDs, and raw
+  server responses; it is documentation only and does not count as test
+  evidence itself.
 
 - Independent 10443 live recheck (2026-07-19 16:08 UTC): the read-only
   `https://api.getio.net:10443/readyz` endpoint returned HTTP 200; `/version`
