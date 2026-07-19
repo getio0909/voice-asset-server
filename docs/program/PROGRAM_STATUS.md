@@ -1,6 +1,14 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 11:06 UTC
+- Last updated: 2026-07-19 11:40 UTC
+
+- Independent 10443 live recheck: at `2026-07-19T11:39:52Z`, an external
+  Windows client using the operating-system trust store received HTTP 200 from
+  `/readyz` and `/api/v1/system/capabilities`; `/version` reported Server
+  `0.1.0-dev+workspace.20260718.12` at commit
+  `294334993a64d6ccacb675d814e23441ee438830`, with contract `0.22.0`. This was
+  read-only and sent no credentials; no service restart, gateway reload, or
+  change to the public Caddy configuration was performed.
 
 - Android recorder-first UX update: Android PR #12 was squash-merged as
   `049d9cc` after PR CI `29684050069` passed all six checks. The home screen
