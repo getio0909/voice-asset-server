@@ -1,6 +1,17 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 06:02 UTC
+- Last updated: 2026-07-19 06:18 UTC
+
+- Independent 10443 read-only recheck: at `2026-07-19T06:16:45Z`,
+  `https://api.getio.net:10443/readyz` returned HTTP 200,
+  `/version` returned Server `0.1.0-dev+workspace.20260718.12` at deployed
+  commit `294334993a64d6ccacb675d814e23441ee438830`, and the public
+  capabilities endpoint returned HTTP 200 with contract `0.22.0`. That
+  deployed commit is an ancestor of current Server `main` `0262775`; later
+  differences are CI and documentation only. A strict system-trust TLS
+  probe observed the same certificate SHA-256 on `api.getio.net:443` and
+  `:10443` (`8caf123add29eca48bb2a9d2d40185a74589bbd291f8fd732990479cc71de0ff`).
+  This was read-only and did not reload or modify either Caddy configuration.
 
 - Android real-recording gate: Android PR #7 was squash-merged as
   `3b5137ff` after Hosted PR CI `29675019396` passed all six checks,
