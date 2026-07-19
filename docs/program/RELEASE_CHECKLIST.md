@@ -16,9 +16,11 @@ Unchecked items are not complete and must not be inferred from project files.
 - [x] Cross-repository compatibility matrix is proven by integration tests
       (the eight-fixture local gate and hosted five-checkout run
       `29655623342` pass)
-- [x] Hosted `v0.1.0-rc.5` release-candidate workflows pass for all five
-      repositories (`29661350978`, `29661351093`, `29661351299`, `29661351168`,
-      and `29661351335`); each remains a draft prerelease
+- [x] Hosted `v0.1.0-rc.7` release-candidate workflows pass for all five
+      repositories (`29681441081`, `29681442803`, `29681444319`, `29681445958`,
+      and `29681447473`); each remains a draft prerelease with checksums and
+      SBOMs, and the Server/Console OCI bundles plus signed Android APK/AAB
+      are retained for testing
 
 ## Product
 
