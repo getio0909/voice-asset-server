@@ -13,6 +13,16 @@
   death seed/verify pair (`OK (1 test)` each). Physical-device microphone,
   reboot, and complete scenario-B evidence remain open.
 
+- v1.0.0 release-candidate audit: annotated `v1.0.0-rc.2` tags target Server
+  `0f5cf21`, Console `dee765a`, Android `049d9cc`, MCP `8d34906`, and Site
+  `1ff291c`. Release workflows `29684731273`, `29684732759`, `29684734369`,
+  `29684735798`, and `29684737106` all passed and created draft prereleases
+  with archives, OCI bundles, checksums, SBOMs/licenses, and signed Android
+  APK/AAB. The Android APK checksum is
+  `102ebeb4abd4cf6602404b650d7ca31008c35f4eb7123e09882bd7d8f2542680`.
+  These are testable release candidates, not a final `v1.0.0` publication;
+  physical-device evidence and the final A–E gates remain open.
+
 - Android Hosted Emulator recovery gate: Android PR #10 was squash-merged as
   `09cad43` after PR CI `29680433670` passed all six checks. Its API 35 run
   completed 48/48 instrumentation tests, then installed both APKs and ran a

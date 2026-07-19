@@ -21,6 +21,11 @@ Unchecked items are not complete and must not be inferred from project files.
       and `29681447473`); each remains a draft prerelease with checksums and
       SBOMs, and the Server/Console OCI bundles plus signed Android APK/AAB
       are retained for testing
+- [x] Hosted `v1.0.0-rc.2` release-candidate workflows pass for all five
+      repositories (`29684731273`, `29684732759`, `29684734369`, `29684735798`,
+      and `29684737106`); the draft prereleases retain the recorder-first
+      Android APK/AAB, platform archives, OCI bundles, SBOMs/licenses, and
+      `SHA256SUMS` for testing
 
 ## Product
 
