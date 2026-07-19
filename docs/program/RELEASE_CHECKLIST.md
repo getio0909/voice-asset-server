@@ -22,7 +22,10 @@ Unchecked items are not complete and must not be inferred from project files.
 
 ## Product
 
-- [ ] Complete asset upload, storage, playback, and lifecycle
+- [x] Complete asset upload, storage, playback, and lifecycle (hosted Compose
+      smoke `29670080607` covers multipart upload, local object storage,
+      authenticated range/HEAD playback, metadata, export, trash, listing,
+      and restore)
 - [x] Hosted Docker Compose startup smoke covers Postgres, migrations, API,
       Worker, Console gateway, readiness, and capabilities; the smoke uses
       isolated project volumes and cleans them after the run
