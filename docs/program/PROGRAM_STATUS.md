@@ -1,6 +1,18 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 16:52 UTC
+- Last updated: 2026-07-19 22:49 UTC
+
+- Android frontend-design UI pass (2026-07-19 22:49 UTC): the recorder surface
+  now uses a recorder-specific graphite/mint/coral palette, drawn search,
+  settings, back, microphone, playback, and stop icons, and coral active
+  waveform bars instead of text glyphs. No production dependency or recording
+  state behavior changed. Local validation passed `:app:ktlintCheck`,
+  `:app:testDebugUnitTest`, `:app:lintDebug`, `:app:assembleDebug`,
+  `:app:compileDebugAndroidTestKotlin`, and `git diff --check`. The debug APK
+  is `app/build/outputs/apk/debug/app-debug.apk` with SHA-256
+  `E832F7C810E5D0483DB9A5AABBF5DAE060BA49589EB922104A5B511284D7D315`.
+  This is a local UI candidate only; physical-device installation and visual
+  acceptance remain open because `adb devices -l` still lists no device.
 
 - Android recorder-first CI acceptance (2026-07-19 16:03 UTC): PR #13 branch
   `agent/recorder-first-ux` at commit `d060892` passed GitHub Actions run
