@@ -1,6 +1,17 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 04:05 UTC
+- Last updated: 2026-07-19 05:06 UTC
+
+- Android network-recovery slice: Android PR #6 was squash-merged as
+  `a7348ed5` after all six PR checks passed in Hosted CI run `29673994655`,
+  including the signed release candidate and 45 Hosted Emulator
+  instrumentation tests. The new test forces a connection loss before an
+  upload-part commit, then verifies the durable checkpoint resumes only the
+  missing part without duplication. Post-merge Android main CI `29674136550`
+  passed instrumentation (`88158194638`), validation (`88158194644`),
+  supply-chain (`88158194640`), and secret-scan (`88158194648`). Local `main`
+  is fast-forwarded to `a7348ed5`; physical-device recording/recovery remains
+  an explicit acceptance gate.
 - Release-draft accuracy update: Server PR #28 was squash-merged as
   `1327e29`, correcting the stale claim that the coordinated Phase 1–6 slices
   were uncommitted and recording the current merged-branch gate references.
