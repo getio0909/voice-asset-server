@@ -1,12 +1,21 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 02:55 UTC
+- Last updated: 2026-07-19 03:32 UTC
 - Site documentation update: Site PR #7 was squash-merged as `7c0a665` after
   its build, SBOM, and secret-scan checks passed. Post-merge Site CI
   `29670866380` is green. The bilingual status, roadmap, and draft release
   notes now record Android Hosted Emulator run `29667693126` with all 44 tests;
   physical-device acceptance, external signing, and `v1.0.0` publication
   remain explicitly open.
+- Release candidate update: `v0.1.0-rc.6` tags now point at the current
+  default branches: Server `2a9dab4`, Console `ed5b7f8`, Android `2e22dc5`,
+  MCP `8d34906`, and Site `7c0a665`. Release workflows
+  `29671512394`, `29671512945`, `29671513656`, `29671514283`, and
+  `29671514861` all passed and created draft prereleases with platform
+  artifacts, SBOMs, and SHA256SUMS. The Android APK is available as
+  `voiceasset-android-v0.1.0-rc.6.apk` and its verified SHA-256 is
+  `11c67f237514807e5297856b63aa288675a1eacdbdb3c9470e5761c2d78c9837`.
+  This is a testable prerelease, not a `v1.0.0` claim.
 - QR pairing update: Android PR #3 was squash-merged as `73a7254`, and its
   hosted CI rerun `29665995831` passed dependency review, SBOM/license checks,
   JVM/Ktlint/lint/build validation, signed release packaging, secret scanning,
