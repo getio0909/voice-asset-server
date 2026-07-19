@@ -48,9 +48,9 @@ Unchecked items are not complete and must not be inferred from project files.
       Google Code Scanner QR flow with paste fallback pass hosted PR CI;
       physical-device scanning remains acceptance evidence
 - [ ] Android offline recording, recovery, upload, and sync (Hosted Emulator
-      now covers production MediaRecorder capture, real-M4A recovery, and 47
-      instrumentation tests; the durable network checkpoint is covered, but
-      physical-device microphone, true process-kill/reboot, and complete
+      now covers production MediaRecorder capture, real-M4A recovery, host-driven
+      process death, and 48 instrumentation tests; the durable network
+      checkpoint is covered, but physical-device microphone/reboot and complete
       scenario-B evidence remain open)
 - [x] MCP stdio and Streamable HTTP tools, resources, scopes, and audit
 - [x] MCP asset search, specified Revision, exact time citation, scope denial,
