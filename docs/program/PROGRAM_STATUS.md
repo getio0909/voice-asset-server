@@ -1,6 +1,15 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 03:32 UTC
+- Last updated: 2026-07-19 04:05 UTC
+- Isolated live acceptance rerun: the disposable PostgreSQL schema applied all
+  18 migrations, real API/Worker processes completed the three live Console
+  workflows (provider administration, LLM/glossary administration, and the
+  upload → Mock ASR → correction → review → approval path), and the MCP
+  `TestLiveMCPReadWorkflow` passed search, revision, exact-range citation, and
+  read-audit checks. The schema, object directory, processes, and logs were
+  removed by the cleanup path. This strengthens A/C/D evidence; the complete
+  A–E gate remains open because Docker installation and Android physical-device
+  recording/recovery are still unexecuted.
 - Site documentation update: Site PR #7 was squash-merged as `7c0a665` after
   its build, SBOM, and secret-scan checks passed. Post-merge Site CI
   `29670866380` is green. The bilingual status, roadmap, and draft release
