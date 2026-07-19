@@ -88,6 +88,8 @@ const assetResponse = await request(
 );
 const assetID = assetResponse.body.id;
 if (typeof assetID !== "string" || !assetID) throw new Error("asset response did not include an id");
+const initialAssetETag = assetResponse.response.headers.get("etag");
+if (!initialAssetETag) throw new Error("asset response did not include an ETag");
 
 const wav = makeWAV();
 const uploadResponse = await request(
@@ -160,4 +162,67 @@ if (head.body.length !== 0 || head.response.headers.get("content-length") !== St
   throw new Error("audio HEAD response did not match the uploaded size");
 }
 
-console.log("Compose HTTP Phase 1 smoke passed: login, multipart upload, Mock ASR, transcript, and range playback.");
+const currentAsset = await request(`/api/v1/assets/${assetID}`);
+const currentAssetETag = currentAsset.response.headers.get("etag");
+if (!currentAssetETag) throw new Error("asset response did not include the current ETag");
+
+const metadata = await request(
+  `/api/v1/assets/${assetID}/metadata`,
+  {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", "If-Match": currentAssetETag },
+    body: jsonBody({ title: "Compose Lifecycle Recording", language: "en-US", collection_id: null }),
+  },
+  200,
+);
+const metadataETag = metadata.response.headers.get("etag");
+if (!metadataETag || metadata.body.title !== "Compose Lifecycle Recording") {
+  throw new Error(`metadata update did not return the new title and ETag: ${JSON.stringify(metadata.body)}`);
+}
+
+const exportResponse = await request(
+  `/api/v1/transcript-revisions/${finishedJob.result_revision_id}/exports`,
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: jsonBody({ format: "markdown" }),
+  },
+  201,
+);
+const exportID = exportResponse.body.id;
+const exportURL = exportResponse.body.download_url;
+if (typeof exportID !== "string" || typeof exportURL !== "string" || !exportURL.startsWith("/api/v1/transcript-exports/")) {
+  throw new Error(`transcript export response was incomplete: ${JSON.stringify(exportResponse.body)}`);
+}
+const downloadedExport = await request(exportURL);
+const exportText = Buffer.from(downloadedExport.body).toString("utf8");
+if (!exportText.includes("Welcome to VoiceAsset.")) {
+  throw new Error("transcript export did not contain the normalized transcript");
+}
+
+const trashed = await request(
+  `/api/v1/assets/${assetID}`,
+  { method: "DELETE", headers: { "If-Match": metadataETag } },
+  200,
+);
+const trashedETag = trashed.response.headers.get("etag");
+if (!trashedETag || trashed.body.status !== "trashed") {
+  throw new Error(`asset trash response was incomplete: ${JSON.stringify(trashed.body)}`);
+}
+await request(`/api/v1/assets/${assetID}`, {}, 404);
+const trashedList = await request("/api/v1/assets?status=trashed");
+if (!trashedList.body.items?.some((asset) => asset.id === assetID && asset.status === "trashed")) {
+  throw new Error("trashed asset was not returned by the explicit trash filter");
+}
+
+const restored = await request(
+  `/api/v1/assets/${assetID}/restore`,
+  { method: "POST", headers: { "If-Match": trashedETag } },
+  200,
+);
+if (restored.body.status !== "ready" || restored.body.title !== "Compose Lifecycle Recording") {
+  throw new Error(`asset restore did not preserve lifecycle state: ${JSON.stringify(restored.body)}`);
+}
+await request(`/api/v1/assets/${assetID}`);
+
+console.log("Compose HTTP smoke passed: login, multipart upload, Mock ASR, transcript, range playback, export, metadata, trash, and restore.");
