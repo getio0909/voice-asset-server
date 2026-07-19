@@ -1,6 +1,6 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 16:44 UTC
+- Last updated: 2026-07-19 16:52 UTC
 
 - Android recorder-first CI acceptance (2026-07-19 16:03 UTC): PR #13 branch
   `agent/recorder-first-ux` at commit `d060892` passed GitHub Actions run
@@ -45,6 +45,13 @@
   explicitly excludes passwords, pairing URIs, tokens, session IDs, and raw
   server responses; it is documentation only and does not count as test
   evidence itself.
+
+- Release gate audit (2026-07-19 16:52 UTC): `RELEASE_CHECKLIST.md` has four
+  intentionally unchecked items: Android physical recording/recovery/upload
+  acceptance, retained evidence for all Scenarios A-E, the final audit for
+  real secrets/critical placeholders/skipped gates, and reproducible final
+  `v1.0.0` release notes/artifacts. Hosted CI, security scans, and Compose
+  evidence do not close these broader gates by themselves.
 
 - Independent 10443 live recheck (2026-07-19 16:08 UTC): the read-only
   `https://api.getio.net:10443/readyz` endpoint returned HTTP 200; `/version`
