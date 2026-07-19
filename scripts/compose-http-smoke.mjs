@@ -171,8 +171,8 @@ const glossary = await request(
       display_name: "Compose correction terms",
       scope_type: "workspace",
       entries: [{
-        canonical_form: "Greetings",
-        aliases: ["Welcome"],
+        canonical_form: "VoiceAsset",
+        aliases: ["VoiceAsset."],
         language: "en-US",
         context_terms: [],
         forbidden_contexts: [],
@@ -246,7 +246,7 @@ const correctedRevision = await request(`/api/v1/transcript-revisions/${finished
 if (
   correctedRevision.body.kind !== "llm_corrected" ||
   correctedRevision.body.parent_revision_id !== finishedJob.result_revision_id ||
-  correctedRevision.body.text !== "Greetings to VoiceAsset." ||
+  correctedRevision.body.text !== "Welcome to VoiceAsset" ||
   correctedRevision.body.diff?.changes?.length !== 1
 ) {
   throw new Error(`unexpected corrected transcript: ${JSON.stringify(correctedRevision.body)}`);
@@ -272,7 +272,7 @@ const approval = await request(
 if (
   approval.body.human_revision?.kind !== "human_edited" ||
   approval.body.approved_revision?.kind !== "approved" ||
-  approval.body.approved_revision?.text !== "Greetings to VoiceAsset."
+  approval.body.approved_revision?.text !== "Welcome to VoiceAsset"
 ) {
   throw new Error(`unexpected approval result: ${JSON.stringify(approval.body)}`);
 }
@@ -316,7 +316,7 @@ if (typeof exportID !== "string" || typeof exportURL !== "string" || !exportURL.
 }
 const downloadedExport = await request(exportURL);
 const exportText = Buffer.from(downloadedExport.body).toString("utf8");
-if (!exportText.includes("Greetings to VoiceAsset.")) {
+if (!exportText.includes("Welcome to VoiceAsset")) {
   throw new Error("transcript export did not contain the normalized transcript");
 }
 
