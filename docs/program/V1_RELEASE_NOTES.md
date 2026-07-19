@@ -1,8 +1,9 @@
 # VoiceAsset v1.0 Release Notes (Draft)
 
 > **Status:** Draft only. `v1.0.0` has not been tagged, published, or declared
-> stable. The coordinated Phase 1–6 slices are still uncommitted, so this
-> document is release-candidate guidance rather than a release announcement.
+> stable. The coordinated Phase 1–6 slices are merged into the five default
+> branches, but the remaining acceptance gates are not closed, so this document
+> is release-candidate guidance rather than a release announcement.
 
 ## Release Identity
 
@@ -152,7 +153,7 @@ target; do not down-migrate live data. See the
   instrumentation methods. Its exact-Profile reconnect clears the password
   before network I/O, never persists it, and preserves any stored session when
   authentication is rejected. The local 0.22 Android candidate remains
-  uncommitted; its 14,870,347-byte debug APK SHA-256 is
+  development-only; its 14,870,347-byte debug APK SHA-256 is
   `FEAC45E88C4BE2AD2208B4E5DF03E176B1DF2DB59E24DCEF07788514E849DA86`.
 - An earlier Android checkpoint passed 112 JVM tests, Ktlint, first-party Release lint, a valid
   v2 development-signed debug APK, unsigned release APK/AAB verification,
@@ -204,7 +205,9 @@ independently matched against its published `SHA256SUMS` before installation.
 
 ## Gates Before Publication
 
-- Submit the coordinated slices and pass all five default-branch CI workflows.
+- Keep the merged coordinated slices green on the five default branches. The
+  current Server main CI `29672964453` and Workspace Compatibility run
+  `29672964483` pass alongside the five `v0.1.0-rc.6` release workflows.
 - Run immutable Tag workflows and retain exact commits, image digests, SBOMs,
   checksums, signatures, and provenance. The draft `v0.1.0-rc.6` artifacts are
   retained evidence, not the final `v1.0.0` publication.
