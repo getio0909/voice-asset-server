@@ -1,6 +1,13 @@
 # VoiceAsset Program Status
 
 - Last updated: 2026-07-19 04:05 UTC
+- Release-draft accuracy update: Server PR #28 was squash-merged as
+  `1327e29`, correcting the stale claim that the coordinated Phase 1–6 slices
+  were uncommitted and recording the current merged-branch gate references.
+  PR checks `29673200001` and `29673200020`, followed by main CI
+  `29673359492` and Workspace Compatibility `29673359514`, all passed. The
+  release checklist remains intentionally open for Docker, Android physical
+  device, and final A–E evidence.
 - Isolated live acceptance rerun: the disposable PostgreSQL schema applied all
   18 migrations, real API/Worker processes completed the three live Console
   workflows (provider administration, LLM/glossary administration, and the
