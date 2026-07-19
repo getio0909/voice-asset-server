@@ -1,6 +1,16 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 06:18 UTC
+- Last updated: 2026-07-19 06:44 UTC
+
+- Current merged-tree release repeatability: Server `19e1db8` and MCP
+  `8d34906` each produced six cross-platform archives twice with
+  `v0.0.0-local.20260719`; all paired SHA-256 values matched and both release
+  verifiers passed. Console `ed5b7f8` and Site `7c0a665` rebuilt their
+  normalized `v0.1.0` static archives twice with matching hashes and passing
+  license/checksum verifiers. Android `main` rebuilt the unsigned `v0.1.0`
+  APK/AAB twice with matching hashes. This strengthens artifact determinism,
+  but the final v1.0 gate remains open for external Android signing, OCI Tag
+  provenance, and physical-device evidence.
 
 - Independent 10443 read-only recheck: at `2026-07-19T06:16:45Z`,
   `https://api.getio.net:10443/readyz` returned HTTP 200,

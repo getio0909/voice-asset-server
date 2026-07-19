@@ -9,6 +9,20 @@ hashes.
 
 ## Local Validation Record
 
+### Current merged-tree repeatability (2026-07-19)
+
+The current default branches were validated again after the coordinated merges.
+Server `19e1db8` and MCP `8d34906` each produced all six cross-platform archives
+twice with `v0.0.0-local.20260719`; every paired SHA-256 value matched, and
+both repository `verify-release.sh` checks passed. Console `ed5b7f8` and Site
+`7c0a665` rebuilt their static bundles twice at `v0.1.0`; the normalized
+archives matched byte-for-byte, and both license/checksum verifiers passed.
+Android `main` rebuilt the unsigned `v0.1.0` APK and AAB twice with
+`clean assembleRelease bundleRelease`; both hashes matched. The Android
+candidate remains explicitly unsigned because no local release keystore is
+available, so external signing and physical-device acceptance remain open.
+Temporary comparison outputs were removed after verification.
+
 On 2026-07-17, each repository was built twice with synthetic version
 `v0.0.0-local.20260717`. Both runs produced identical SHA-256 values for every
 archive. Server embedded baseline revision
