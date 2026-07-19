@@ -1,6 +1,6 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 09:02 UTC
+- Last updated: 2026-07-19 09:36 UTC
 
 - Android Hosted Emulator recovery gate: Android PR #10 was squash-merged as
   `09cad43` after PR CI `29680433670` passed all six checks. Its API 35 run
@@ -13,15 +13,18 @@
   plus seed/verify evidence. Physical-device microphone/reboot and complete
   scenario-B evidence remain open and are not inferred from Hosted Emulator CI.
 
-- Current merged-tree release repeatability: Server `19e1db8` and MCP
-  `8d34906` each produced six cross-platform archives twice with
-  `v0.0.0-local.20260719`; all paired SHA-256 values matched and both release
-  verifiers passed. Console `ed5b7f8` and Site `7c0a665` rebuilt their
-  normalized `v0.1.0` static archives twice with matching hashes and passing
-  license/checksum verifiers. Android `main` rebuilt the unsigned `v0.1.0`
-  APK/AAB twice with matching hashes. This strengthens artifact determinism,
-  but the final v1.0 gate remains open for external Android signing, OCI Tag
-  provenance, and physical-device evidence.
+- Candidate artifact audit: the annotated `v0.1.0-rc.7` tags target the current
+  default-branch commits Server `7271011`, Console `ed5b7f8`, Android `09cad43`,
+  MCP `8d34906`, and Site `7c0a665`. Release workflows
+  `29681441081`, `29681442803`, `29681444319`, `29681445958`, and `29681447473`
+  all passed. The draft prereleases contain the expected archives, OCI bundles,
+  APK/AAB, SBOMs, licenses, and `SHA256SUMS`; the signed Android APK digest is
+  `143dc8f70f73a4568ba5bb4cd8021aa50cae81571ea3ce887888452861f5ea13`, and
+  the Server/Console OCI bundle digests are
+  `8e71b9c9bd04b5f08a1f9fb3f77e3ac9856d075f9098d744af6b586feb2985dd` and
+  `335dfe80978cfe0175bf74589babeace65b29ea602606c00dd328dadb93cbcf1`.
+  These are reproducible test candidates, not a `v1.0.0` publication: physical
+  device evidence and final release gates remain open.
 
 - Independent 10443 read-only recheck: at `2026-07-19T06:16:45Z`,
   `https://api.getio.net:10443/readyz` returned HTTP 200,
