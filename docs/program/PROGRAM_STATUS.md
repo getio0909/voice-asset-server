@@ -1,6 +1,20 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 23:11 UTC
+- Last updated: 2026-07-19 23:25 UTC
+
+- Android settings-list acceptance (2026-07-19 23:25 UTC): Android commit
+  `184bd32` keeps the settings page as four distinct, scrollable groups:
+  Recording, Playback, Appearance, and Recording behavior. Language is only
+  exposed inside Appearance, with a compact value control; the physical-device
+  screenshot review confirmed the grouped cards, dividers, switches, and
+  decoder choices remain visually coherent on the M2012K10C (Android 13).
+  The signed candidate from [Android CI run 29707678233](https://github.com/getio0909/voice-asset-android/actions/runs/29707678233)
+  passed all six jobs, including all 51 Compose instrumentation tests. Its
+  APK SHA-256 is `10f8a06404c6557193b32b66fabb1db035fb773a8ebcdabf578df8c4d727758e`.
+  The APK was installed over the existing signed package with `adb install -r -d`,
+  preserving local data. The prior CI failure was a test attempting to
+  select the language item before scrolling to the newly grouped Appearance
+  section; commit `184bd32` makes the test scroll first.
 
 - Android frontend-design UI pass (2026-07-19 22:49 UTC): the recorder surface
   now uses a recorder-specific graphite/mint/coral palette, drawn search,
