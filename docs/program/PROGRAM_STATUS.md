@@ -1,6 +1,6 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 01:50 UTC
+- Last updated: 2026-07-19 02:28 UTC
 - QR pairing update: Android PR #3 was squash-merged as `73a7254`, and its
   hosted CI rerun `29665995831` passed dependency review, SBOM/license checks,
   JVM/Ktlint/lint/build validation, signed release packaging, secret scanning,
@@ -37,6 +37,14 @@
   after asynchronous upload/transcription processing, preserving the intended
   optimistic-concurrency contract. Post-merge Server CI `29669093306` and
   Workspace Compatibility `29669093313` both passed.
+- Compose Mock LLM update: Server PR #21 was squash-merged as `95c1e5e`.
+  Hosted checks `29669921684` passed after the smoke created a credential-free
+  Mock LLM profile and glossary, ran structured correction, accepted the
+  immutable review, created the approved child revision, rejected duplicate
+  approval, and exported the approved text. The first fixture attempt
+  (`29669704812`) correctly hit the per-segment change-ratio safety limit;
+  the corrected punctuation-only fixture passed in the rerun. Post-merge
+  Server CI `29670080607` and Workspace Compatibility `29670080597` passed.
 - Release-candidate update: Server PRs #7, #8, #9, and #10, Console PRs #2-
   #5, Android PR #2, and Site PR #6 are merged into their default branches.
   The immutable `v0.1.0-rc.5` tags now point at Server `efc1db1`, Console
