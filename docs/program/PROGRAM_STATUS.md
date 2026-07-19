@@ -1,6 +1,12 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 02:28 UTC
+- Last updated: 2026-07-19 02:55 UTC
+- Site documentation update: Site PR #7 was squash-merged as `7c0a665` after
+  its build, SBOM, and secret-scan checks passed. Post-merge Site CI
+  `29670866380` is green. The bilingual status, roadmap, and draft release
+  notes now record Android Hosted Emulator run `29667693126` with all 44 tests;
+  physical-device acceptance, external signing, and `v1.0.0` publication
+  remain explicitly open.
 - QR pairing update: Android PR #3 was squash-merged as `73a7254`, and its
   hosted CI rerun `29665995831` passed dependency review, SBOM/license checks,
   JVM/Ktlint/lint/build validation, signed release packaging, secret scanning,
