@@ -352,6 +352,16 @@ double-build comparison; the Site normalizes Pagefind's generated language-map
 ordering before packaging so byte equality is intentional rather than
 scheduler-dependent.
 
+## Current Coordinated Candidate
+
+The `v0.1.0-rc.6` tags point at Server `2a9dab4`, Console `ed5b7f8`, Android
+`2e22dc5`, MCP `8d34906`, and Site `7c0a665`. Release workflows for all five
+repositories passed (`29671512394`, `29671512945`, `29671513656`, `29671514283`,
+and `29671514861`) and published draft artifacts with SBOMs and SHA256SUMS.
+The Android Hosted Emulator run `29667693126` passed all 44 instrumentation
+tests; physical-device recording, process-death, and network-recovery evidence
+remain open, so this is not a v1.0 release row.
+
 ## Workspace Compatibility Gate
 
 Run `make compatibility` from `voice-asset-server` with all five sibling
@@ -359,8 +369,11 @@ repositories present. The command first runs seven isolated fixture tests, then
 executes `adminctl capabilities` and checks the actual Server API/contract and
 sorted capability set against Console, Android, MCP, and Site declarations.
 `.github/workflows/workspace-compatibility.yml` performs the same check by
-checking out the four public client repositories. The workflow is ready but has
-not run for the uncommitted `0.19.0` slice, so this row remains unsupported.
+checking out the four public client repositories. The current default-branch
+merge run `29672081074` passed the live compatibility check; Server-only pull
+requests safely fall back to each client repository's `main` when a shared ref
+does not exist. Historical pre-0.22 rows remain unsupported unless their own
+recorded evidence says otherwise.
 
 ## Policy
 

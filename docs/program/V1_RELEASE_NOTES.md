@@ -15,10 +15,10 @@
   Webhook and WebSocket acceptance
   passed on isolated `10443`, followed by readiness, capability, MCP boundary,
   `/version`, and static Console asset checks after the 14:21 UTC cutover.
-- Release tag and exact commits: not created.
-- Local debug/test APKs plus a formally signed release APK/AAB, SBOM, and
-  checksum package are verified but are not Tag artifacts; hosted CI, published
-  images, and the release tag remain pending.
+- Coordinated test tag `v0.1.0-rc.6` now points at the current default-branch
+  commits for all five repositories. Its five Release Candidate workflows
+  passed and created draft prereleases containing platform artifacts, SBOMs,
+  and SHA256SUMS; this candidate is not `v1.0.0` and is not Stable.
 
 ## Candidate Highlights
 
@@ -183,12 +183,18 @@ target; do not down-migrate live data. See the
 
 ## Acceptance Status
 
+The current `v0.1.0-rc.6` candidate is the first retained five-repository
+artifact set. Release workflows `29671512394`, `29671512945`, `29671513656`,
+`29671514283`, and `29671514861` all passed. The Android APK checksum was
+independently matched against its published `SHA256SUMS` before installation.
+
 - **A — self-hosted installation:** native isolated deployment and restore are
   verified; the Docker upgrade gate remains open.
 - **B — Android recording and sync:** core JVM logic, application compile, lint,
-  Room schema, debug/test APK, and formally signed release APK/AAB builds are
-  verified; hosted CI, emulator/physical-device execution, and recovery remain
-  open.
+  Room schema, debug/test APK, formally signed release APK/AAB builds, and all
+  44 API 35 Hosted Emulator instrumentation tests in Android CI
+  `29667693126` are verified. Physical-device microphone, process-death, and
+  network-recovery acceptance remains open.
 - **C — ASR and LLM workflow:** Mock and fixture workflows are verified;
   successful live-vendor execution is not claimed.
 - **D — MCP integration:** local and isolated remote read/write, scope, and audit
@@ -200,11 +206,12 @@ target; do not down-migrate live data. See the
 
 - Submit the coordinated slices and pass all five default-branch CI workflows.
 - Run immutable Tag workflows and retain exact commits, image digests, SBOMs,
-  checksums, signatures, and provenance.
+  checksums, signatures, and provenance. The draft `v0.1.0-rc.6` artifacts are
+  retained evidence, not the final `v1.0.0` publication.
 - Validate Linux amd64/arm64 container builds and Docker upgrade/restore.
-- Run the compiled Android instrumentation suite on an accelerated emulator or
-  physical device, then pass microphone, process-death, network-recovery, and
-  externally signed APK/AAB gates.
+- Retain the hosted emulator run, then pass microphone, process-death,
+  network-recovery, and externally signed APK/AAB gates on an accelerated
+  emulator or physical device.
 - Retain the clean-instance S3 backup/restore evidence before advertising that
   backend.
 - Retain the deployed Collector, Alertmanager, and receiver evidence while
