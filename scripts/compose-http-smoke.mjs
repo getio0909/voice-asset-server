@@ -162,11 +162,15 @@ if (head.body.length !== 0 || head.response.headers.get("content-length") !== St
   throw new Error("audio HEAD response did not match the uploaded size");
 }
 
+const currentAsset = await request(`/api/v1/assets/${assetID}`);
+const currentAssetETag = currentAsset.response.headers.get("etag");
+if (!currentAssetETag) throw new Error("asset response did not include the current ETag");
+
 const metadata = await request(
   `/api/v1/assets/${assetID}/metadata`,
   {
     method: "PUT",
-    headers: { "Content-Type": "application/json", "If-Match": initialAssetETag },
+    headers: { "Content-Type": "application/json", "If-Match": currentAssetETag },
     body: jsonBody({ title: "Compose Lifecycle Recording", language: "en-US", collection_id: null }),
   },
   200,
