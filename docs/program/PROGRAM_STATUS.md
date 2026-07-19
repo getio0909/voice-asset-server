@@ -1,6 +1,105 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 11:40 UTC
+- Last updated: 2026-07-19 16:24 UTC
+
+- Android recorder-first CI acceptance (2026-07-19 16:03 UTC): PR #13 branch
+  `agent/recorder-first-ux` at commit `d060892` passed GitHub Actions run
+  `29693853885` end-to-end. The run passed all 51 Hosted Emulator
+  instrumentation tests, validation, signed release-candidate build,
+  dependency review, supply-chain/SBOM/license checks, and secret scan. The
+  installable signed APK/AAB plus `SHA256SUMS` are in the
+  [signed-release artifact](https://github.com/getio0909/voice-asset-android/actions/runs/29693853885/artifacts/8444422590);
+  the debug APK is in the [debug artifact](https://github.com/getio0909/voice-asset-android/actions/runs/29693853885/artifacts/8444432250),
+  and the Android SBOM is in the [SBOM artifact](https://github.com/getio0909/voice-asset-android/actions/runs/29693853885/artifacts/8444393667).
+  The signed-release artifact ZIP digest is
+  `14a1c91a7a1cd32e396fb8763b40954a9fc0771dc7c526a61e00454abd3f93b6`.
+  Physical-device microphone, reboot/process-death, and complete scenario-B
+  evidence remain open for the user's next test session; this is not a final
+  `v1.0.0` publication.
+
+- Android post-merge CI acceptance (2026-07-19 16:19 UTC): PR #13 is merged
+  into Android `main` as `d6c8df69553ed3338a98520bedc9909bcb64e3b5`.
+  Main-branch run `29694391878` passed validation, all 51 Hosted Emulator
+  instrumentation tests, supply-chain checks, and secret scanning. The main
+  workflow intentionally skips the duplicate signed-candidate and dependency
+  review jobs; the signed APK/AAB artifact remains retained from the fully
+  green PR run above. Physical-device and final scenario-B evidence remain
+  open.
+
+- Current workspace gate (2026-07-19 16:22 UTC): Server `go test ./...` passed
+  all command, internal, and E2E/performance packages. `make compatibility`
+  passed all eight negative/positive fixtures and the live five-repository
+  contract check: five repositories, API v1, contract `0.22.0`, 45 Server
+  features, 32 Console features, 6 Android features, and an exact Site
+  OpenAPI copy.
+
+- Android local post-merge gate (2026-07-19 16:23 UTC): Android `main` at
+  `d6c8df6` passed `ktlintCheck`, `:app:testDebugUnitTest`, `:app:lintDebug`,
+  and `git diff --check` on the workstation. No device was attached, so this
+  local check does not replace the explicit physical-device acceptance gate.
+
+- Independent 10443 live recheck (2026-07-19 16:08 UTC): the read-only
+  `https://api.getio.net:10443/readyz` endpoint returned HTTP 200; `/version`
+  still reports Server `0.1.0-dev+workspace.20260718.12` at commit
+  `294334993a64d6ccacb675d814e23441ee438830`; and capabilities report API v1,
+  contract `0.22.0`, and the expected feature set. Strict TLS handshakes on
+  ports 443 and 10443 present the same `CN=api.getio.net` certificate,
+  expiring `2026-10-15T19:52:38Z`, SHA-256
+  `8CAF123ADD29ECA48BB2A9D2D40185A74589BBD291F8FD732990479CC71DE0FF`.
+  This was read-only and did not reload or modify either Caddy configuration.
+
+- Cross-repository local verification (2026-07-19): Server `go test ./...` and
+  MCP `go test ./...` passed. Console `pnpm verify` passed formatting,
+  contract pin, lint, 22 Vitest files/110 tests, typecheck, production build,
+  and license checks. Site `pnpm test` passed Astro diagnostics, contract and
+  generated API reference checks, English/Chinese parity, static build,
+  accessibility, links, and license checks. No generated artifacts or secrets
+  were left tracked. These checks validate the current clean Console/MCP/Site
+  branches; the Android recorder changes are committed on PR #13's feature
+  branch and still await physical-device acceptance.
+
+- Additional CI-equivalent checks (2026-07-19): Server `go vet ./...`,
+  `go build ./cmd/...`, MCP `go vet ./...`, `go build ./cmd/voice-asset-mcp`,
+  Android `git diff --check`, and the eight-case workspace compatibility suite
+  all passed. The compatibility verifier confirmed five repositories, API v1,
+  contract `0.22.0`, 45 Server features, 32 Console features, 6 Android
+  features, and an exact Site OpenAPI copy.
+
+- Android CI parity follow-up (2026-07-19): the newly added decoder-choice
+  Compose regression test compiles with `:app:compileDebugAndroidTestKotlin`.
+  `ktlintCheck` initially found formatting violations in the recorder changes;
+  those were corrected, and the final `ktlintCheck`, AndroidTest compilation,
+  `:app:testDebugUnitTest`, `:app:lintDebug`, `:app:assembleDebug`, and
+  `git diff --check` all pass. The refreshed debug APK is
+  `app/build/outputs/apk/debug/app-debug.apk` with SHA-256
+  `AA5C47EBCB69BEC76C9A6E754349E77FCBD18CF1A1BA87BB99AD16CE5B973C09`.
+  Instrumentation was compiled but not executed because the phone is
+  disconnected.
+
+- External acceptance preflight (2026-07-19 13:44 UTC): the independent test
+  endpoint `https://api.getio.net:10443` returned `/readyz` HTTP 200,
+  `/version` Server `0.1.0-dev+workspace.20260718.12` at commit
+  `294334993a64d6ccacb675d814e23441ee438830`, and capabilities API v1/contract
+  `0.22.0` with 45 features. The checks were read-only and did not reload or
+  modify Caddy. Docker is not installed on this workstation and `adb devices`
+  currently lists no attached device; GitHub CLI authentication is available
+  for a later explicitly requested push/CI operation.
+
+- Android recorder-first UX follow-up (PR #13 feature branch, 2026-07-19): navigation is
+  now a single top-bar flow (recordings, record, settings) with search,
+  filters, sorting, a single prominent record action, and language kept inside
+  Settings. Playback rows expose one stateful play/pause/stop control, and
+  Settings exposes system-default, hardware-preferred, and compatibility
+  decoder choices. Hardware preference is best-effort and safely falls back to
+  Android's system player; it does not claim direct MediaCodec selection.
+  `:app:compileDebugKotlin`, `:app:compileDebugAndroidTestKotlin`,
+  `:app:testDebugUnitTest`, `:app:lintDebug`, `:app:assembleDebug`, and
+  `git diff --check` passed. The current debug APK is
+  `app/build/outputs/apk/debug/app-debug.apk` with SHA-256
+  `F5218C26F8A139F3A21709EC6963BEA940DDF654FA635B1ADC942061A83FF3D0`.
+  Physical-device instrumentation, microphone capture, and playback were not
+  rerun after the user unplugged the phone and remain explicit acceptance
+  items for the next test session.
 
 - Independent 10443 live recheck: at `2026-07-19T11:39:52Z`, an external
   Windows client using the operating-system trust store received HTTP 200 from
