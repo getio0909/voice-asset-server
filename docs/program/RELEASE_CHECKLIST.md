@@ -51,9 +51,10 @@ Unchecked items are not complete and must not be inferred from project files.
       physical-device scanning remains acceptance evidence
 - [ ] Android offline recording, recovery, upload, and sync (Hosted Emulator
       now covers production MediaRecorder capture, real-M4A recovery, host-driven
-      process death, and 48 instrumentation tests; the durable network
-      checkpoint is covered, but physical-device microphone/reboot and complete
-      scenario-B evidence remain open)
+      process death, the durable network checkpoint, and 49 instrumentation
+      tests. The recorder-first UI and language switch are covered by the merged
+      Android PR #12 and post-merge CI; physical-device microphone/reboot and
+      complete scenario-B evidence remain open)
 - [x] MCP stdio and Streamable HTTP tools, resources, scopes, and audit
 - [x] MCP asset search, specified Revision, exact time citation, scope denial,
       and read-audit vertical slice
