@@ -1,6 +1,17 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 09:36 UTC
+- Last updated: 2026-07-19 11:06 UTC
+
+- Android recorder-first UX update: Android PR #12 was squash-merged as
+  `049d9cc` after PR CI `29684050069` passed all six checks. The home screen
+  now opens on a local-first recorder surface with a large record action,
+  elapsed timer, animated waveform, pause/resume/stop-save controls, and
+  secondary recording-policy options. English and Simplified Chinese can be
+  selected from a persisted language menu. Post-merge Android main CI
+  `29684280677` passed validation, secret scan, supply-chain checks, and all
+  49 Hosted Emulator instrumentation tests, including the host-driven process
+  death seed/verify pair (`OK (1 test)` each). Physical-device microphone,
+  reboot, and complete scenario-B evidence remain open.
 
 - Android Hosted Emulator recovery gate: Android PR #10 was squash-merged as
   `09cad43` after PR CI `29680433670` passed all six checks. Its API 35 run
