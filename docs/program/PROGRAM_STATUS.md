@@ -10,6 +10,13 @@
   read-only and sent no credentials; no service restart, gateway reload, or
   change to the public Caddy configuration was performed.
 
+- Independent TLS boundary recheck: at `2026-07-19T11:54:51Z`, strict
+  system-trust handshakes to `api.getio.net:443` and `:10443` both presented
+  `CN=api.getio.net`, expiry `2026-10-15T19:52:38Z`, and SHA-256
+  `8CAF123ADD29ECA48BB2A9D2D40185A74589BBD291F8FD732990479CC71DE0FF`.
+  This was read-only; no certificate, gateway, or public Caddy configuration
+  was changed.
+
 - Android recorder-first UX update: Android PR #12 was squash-merged as
   `049d9cc` after PR CI `29684050069` passed all six checks. The home screen
   now opens on a local-first recorder surface with a large record action,
