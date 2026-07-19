@@ -162,6 +162,126 @@ if (head.body.length !== 0 || head.response.headers.get("content-length") !== St
   throw new Error("audio HEAD response did not match the uploaded size");
 }
 
+const glossary = await request(
+  "/api/v1/glossary-sets",
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: jsonBody({
+      display_name: "Compose correction terms",
+      scope_type: "workspace",
+      entries: [{
+        canonical_form: "Greetings",
+        aliases: ["Welcome"],
+        language: "en-US",
+        context_terms: [],
+        forbidden_contexts: [],
+        regex: false,
+        case_sensitive: false,
+        priority: 100,
+        description: "Compose Mock LLM correction fixture",
+      }],
+    }),
+  },
+  201,
+);
+if (glossary.body.current_version !== 1 || typeof glossary.body.id !== "string") {
+  throw new Error(`glossary creation did not publish version one: ${JSON.stringify(glossary.body)}`);
+}
+
+const llmProfile = await request(
+  "/api/v1/llm-profiles",
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: jsonBody({
+      provider_id: "mock_llm",
+      display_name: "Compose Mock correction",
+      state: "enabled",
+      priority: 1,
+      config: {
+        model: "deterministic_glossary_v1",
+        timeout: "30s",
+        concurrency: 32,
+        temperature: 0,
+        context_limit: 64000,
+        structured_output: true,
+        prompt_template: "correction.v1",
+        default_glossary_id: glossary.body.id,
+        auto_approval_policy: "never",
+      },
+    }),
+  },
+  201,
+);
+if (llmProfile.body.provider_id !== "mock_llm" || llmProfile.body.secret_configured !== false) {
+  throw new Error(`Mock LLM profile exposed unexpected configuration: ${JSON.stringify(llmProfile.body)}`);
+}
+
+const correctionResponse = await request(
+  `/api/v1/transcript-revisions/${finishedJob.result_revision_id}/corrections`,
+  { method: "POST", headers: { "Idempotency-Key": "compose-smoke-correction" } },
+  202,
+);
+const correctionJobID = correctionResponse.body.id;
+if (typeof correctionJobID !== "string" || !correctionJobID) {
+  throw new Error("correction response did not include a job id");
+}
+
+let finishedCorrection;
+for (let attempt = 0; attempt < 45; attempt += 1) {
+  const current = await request(`/api/v1/transcription-jobs/${correctionJobID}`);
+  finishedCorrection = current.body;
+  if (finishedCorrection.state === "succeeded") break;
+  if (finishedCorrection.state === "failed") {
+    throw new Error(`correction job failed: ${finishedCorrection.error_code ?? "unknown"}`);
+  }
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+}
+if (finishedCorrection?.state !== "succeeded" || typeof finishedCorrection.result_revision_id !== "string") {
+  throw new Error(`correction job did not finish: ${JSON.stringify(finishedCorrection)}`);
+}
+
+const correctedRevision = await request(`/api/v1/transcript-revisions/${finishedCorrection.result_revision_id}`);
+if (
+  correctedRevision.body.kind !== "llm_corrected" ||
+  correctedRevision.body.parent_revision_id !== finishedJob.result_revision_id ||
+  correctedRevision.body.text !== "Greetings to VoiceAsset." ||
+  correctedRevision.body.diff?.changes?.length !== 1
+) {
+  throw new Error(`unexpected corrected transcript: ${JSON.stringify(correctedRevision.body)}`);
+}
+await request(
+  `/api/v1/transcript-revisions/${finishedCorrection.result_revision_id}/reviews`,
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: jsonBody({ action: "accept_all" }),
+  },
+  201,
+);
+const approval = await request(
+  `/api/v1/transcript-revisions/${finishedCorrection.result_revision_id}/approve`,
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: jsonBody({}),
+  },
+  201,
+);
+if (
+  approval.body.human_revision?.kind !== "human_edited" ||
+  approval.body.approved_revision?.kind !== "approved" ||
+  approval.body.approved_revision?.text !== "Greetings to VoiceAsset."
+) {
+  throw new Error(`unexpected approval result: ${JSON.stringify(approval.body)}`);
+}
+await request(
+  `/api/v1/transcript-revisions/${finishedCorrection.result_revision_id}/approve`,
+  { method: "POST", headers: { "Content-Type": "application/json" }, body: jsonBody({}) },
+  409,
+);
+
 const currentAsset = await request(`/api/v1/assets/${assetID}`);
 const currentAssetETag = currentAsset.response.headers.get("etag");
 if (!currentAssetETag) throw new Error("asset response did not include the current ETag");
@@ -181,7 +301,7 @@ if (!metadataETag || metadata.body.title !== "Compose Lifecycle Recording") {
 }
 
 const exportResponse = await request(
-  `/api/v1/transcript-revisions/${finishedJob.result_revision_id}/exports`,
+  `/api/v1/transcript-revisions/${approval.body.approved_revision.id}/exports`,
   {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -196,7 +316,7 @@ if (typeof exportID !== "string" || typeof exportURL !== "string" || !exportURL.
 }
 const downloadedExport = await request(exportURL);
 const exportText = Buffer.from(downloadedExport.body).toString("utf8");
-if (!exportText.includes("Welcome to VoiceAsset.")) {
+if (!exportText.includes("Greetings to VoiceAsset.")) {
   throw new Error("transcript export did not contain the normalized transcript");
 }
 
@@ -225,4 +345,4 @@ if (restored.body.status !== "ready" || restored.body.title !== "Compose Lifecyc
 }
 await request(`/api/v1/assets/${assetID}`);
 
-console.log("Compose HTTP smoke passed: login, multipart upload, Mock ASR, transcript, range playback, export, metadata, trash, and restore.");
+console.log("Compose HTTP smoke passed: login, multipart upload, Mock ASR/LLM, transcript review/approval, range playback, export, metadata, trash, and restore.");
