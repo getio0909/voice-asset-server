@@ -1,6 +1,6 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 22:49 UTC
+- Last updated: 2026-07-19 23:11 UTC
 
 - Android frontend-design UI pass (2026-07-19 22:49 UTC): the recorder surface
   now uses a recorder-specific graphite/mint/coral palette, drawn search,
@@ -13,6 +13,17 @@
   `E832F7C810E5D0483DB9A5AABBF5DAE060BA49589EB922104A5B511284D7D315`.
   This is a local UI candidate only; physical-device installation and visual
   acceptance remain open because `adb devices -l` still lists no device.
+
+- Android settings information-architecture pass (2026-07-19 23:11 UTC): the
+  follow-up UI candidate groups settings into separate Recording, Playback,
+  Appearance, and Recording behavior list sections; language remains inside
+  Appearance. The screenshot review also aligned the surface-container colors
+  with the recorder palette and replaced the sun-like settings glyph with a
+  gear silhouette. Local ktlint, unit tests, lint, debug assembly,
+  AndroidTest compilation, and diff checks pass on Android commit `ca106ec`.
+  Hosted Android CI run `29707385160` is still in progress; no hosted result
+  is inferred here. Physical-device acceptance remains open until this signed
+  candidate is installed and exercised.
 
 - Android recorder-first CI acceptance (2026-07-19 16:03 UTC): PR #13 branch
   `agent/recorder-first-ux` at commit `d060892` passed GitHub Actions run
