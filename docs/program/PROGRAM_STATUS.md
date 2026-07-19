@@ -1,16 +1,17 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 07:45 UTC
+- Last updated: 2026-07-19 09:02 UTC
 
-- Android Hosted Emulator recovery gate: Android PR #9 was squash-merged as
-  `bbdbafb` after PR CI `29678232942` passed all six checks. Its 47-test API 35
-  instrumentation run exercised a real `MediaRecorder` M4A, persisted the
-  production `Starting` → `Recording` state sequence, ran the production
-  `RecordingRecovery`, and verified positive duration, file size, and SHA-256
-  metadata with zero failures. Post-merge Android main CI `29678436463` also
-  completed all 47 tests with `0 failed`. This closes the Hosted Emulator
-  recovery slice; physical-device microphone, true process-kill/reboot, and
-  complete scenario-B evidence remain open and are not inferred from this run.
+- Android Hosted Emulator recovery gate: Android PR #10 was squash-merged as
+  `09cad43` after PR CI `29680433670` passed all six checks. Its API 35 run
+  completed 48/48 instrumentation tests, then installed both APKs and ran a
+  host-driven seed (`OK (1 test)`), `adb shell am force-stop
+  com.voiceasset.android`, and a fresh-process verify (`OK (1 test)`). The
+  production `MediaRecorder` M4A, persisted `Starting` → `Recording` state,
+  startup `RecordingRecovery`, and duration/size/SHA-256 checks are covered;
+  post-merge Android main CI `29680652575` also passed with the same 48-test
+  plus seed/verify evidence. Physical-device microphone/reboot and complete
+  scenario-B evidence remain open and are not inferred from Hosted Emulator CI.
 
 - Current merged-tree release repeatability: Server `19e1db8` and MCP
   `8d34906` each produced six cross-platform archives twice with
