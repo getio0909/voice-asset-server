@@ -47,7 +47,11 @@ Unchecked items are not complete and must not be inferred from project files.
 - [x] One-time pairing QR slice: Console in-memory QR rendering and Android
       Google Code Scanner QR flow with paste fallback pass hosted PR CI;
       physical-device scanning remains acceptance evidence
-- [ ] Android offline recording, recovery, upload, and sync
+- [ ] Android offline recording, recovery, upload, and sync (Hosted Emulator
+      now covers production MediaRecorder capture and 46 instrumentation tests;
+      the durable network checkpoint is covered, but physical-device
+      microphone, process-kill/reboot, and complete scenario-B evidence remain
+      open)
 - [x] MCP stdio and Streamable HTTP tools, resources, scopes, and audit
 - [x] MCP asset search, specified Revision, exact time citation, scope denial,
       and read-audit vertical slice

@@ -1,6 +1,21 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 05:06 UTC
+- Last updated: 2026-07-19 06:02 UTC
+
+- Android real-recording gate: Android PR #7 was squash-merged as
+  `3b5137ff` after Hosted PR CI `29675019396` passed all six checks,
+  including a production `MediaRecorderEngine` test that records, pauses,
+  resumes, and verifies a readable M4A with positive duration. The first
+  attempt (`29674799547`) exposed an API-order bug on API 35; the recorder
+  now configures privacy sensitivity before output format. PR #8 recorded
+  this acceptance change in `CHANGELOG.md` and merged as `6d7ea02`. Android
+  main CI `29675191841` (instrumentation `88161270018`, validation
+  `88161270022`, supply-chain `88161270004`, secret-scan `88161270015`) and
+  follow-up main CI `29675556207` (instrumentation `88162237156`, validation
+  `88162237165`, supply-chain `88162237162`, secret-scan `88162237175`) also
+  passed. Android instrumentation now contains 46 tests. Physical-device
+  microphone, process-kill/reboot, and complete scenario-B evidence remain
+  open.
 
 - Android network-recovery slice: Android PR #6 was squash-merged as
   `a7348ed5` after all six PR checks passed in Hosted CI run `29673994655`,
