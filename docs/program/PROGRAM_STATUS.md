@@ -1,6 +1,14 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-20 00:07 UTC
+- Last updated: 2026-07-20 00:25 UTC
+
+- Server CI reliability (2026-07-20 00:25 UTC): commit `f3c5def` replaces the
+  PR-API-dependent `gitleaks-action` step with a pinned full-history
+  `gitleaks v8.24.3` CLI scan (`103` commits, no leaks). The replacement avoids
+  transient GitHub `/pulls/{number}/commits` HTTP 503 failures while preserving
+  a failing exit code for detected secrets. CI run `29709327949` passed format,
+  tests, contract/build, dependency/license/SBOM, and secret checks; the
+  paired Workspace Compatibility run `29709327961` also passed.
 
 - Android physical playback/export acceptance (2026-07-20 00:07 UTC): Android
   commit `523dd6a` corrected a canonical-path false rejection: Android's
