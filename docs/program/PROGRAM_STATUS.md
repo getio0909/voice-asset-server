@@ -1,6 +1,104 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 16:52 UTC
+- Last updated: 2026-07-20 01:04 UTC
+
+- Independent HTTPS port recheck (2026-07-20 00:38 UTC): the authorized
+  `https://api.getio.net:10443` endpoint returned `200` from `/readyz` with
+  `Via: 1.1 Caddy` and the expected workspace server headers. `/version`
+  reported commit `294334993a64d6ccacb675d814e23441ee438830`. A read-only TLS
+  probe confirmed that ports `443` and `10443` both present `CN=api.getio.net`,
+  expire `2026-10-15T19:52:38Z`, and use the same SHA-256 certificate
+  fingerprint `8CAF123ADD29ECA48BB2A9D2D40185A74589BBD291F8FD732990479CC71DE0FF`;
+  no Caddy configuration was changed by this check.
+
+- Android recovery gate re-audit (2026-07-20 00:41 UTC): local Android
+  `:app:ktlintCheck`, `:app:testDebugUnitTest`, and
+  `:app:compileDebugAndroidTestKotlin` passed again. The authorized Android
+  host then timed out on SSH, so physical process-recovery/reboot,
+  upload/sync, and complete Scenario B evidence remain open. All five
+  repositories are clean and tracking their remotes; a new placeholder scan
+  found only test fixtures, documentation examples, and UI input hints.
+
+- Android settings-list refinement (2026-07-20 00:46 UTC): commit `27ba470`
+  changes the settings surface from four separate cards to one continuous,
+  icon-led list card with dividers between Recording, Playback, Appearance,
+  and Recording behavior. Language remains inside Appearance. Local ktlint,
+  unit tests, AndroidTest compilation, lint, Debug assembly, and `git diff
+  --check` passed. Hosted CI was not yet rechecked because the GitHub Actions
+  API returned a transient HTTP 503; physical visual review remains pending
+  with the authorized Android host currently unreachable.
+
+- Android CI secret-scan repair (2026-07-20 00:55 UTC): hosted run
+  `29709957553` failed only in `secret-scan`; its annotation reported that
+  `gitleaks-action@v3` required a missing license. Commit `936b998` replaces
+  that action with the pinned `gitleaks v8.24.3` CLI used by Server. The local
+  full-history scan covered `79` commits and found no leaks; the replacement
+  was pushed for a fresh hosted run.
+
+- Android CI repair acceptance (2026-07-20 01:03 UTC): hosted run
+  `29710169683` for commit `936b998` passed all six jobs: validate,
+  signed-release, instrumentation, dependency-review, secret-scan, and
+  supply-chain. The run retained the signed release artifact and the full
+  51-test emulator/recovery suite; the physical-device recovery and sync
+  evidence remains separate and open.
+
+- Server CI reliability (2026-07-20 00:25 UTC): commit `f3c5def` replaces the
+  PR-API-dependent `gitleaks-action` step with a pinned full-history
+  `gitleaks v8.24.3` CLI scan (`103` commits, no leaks). The replacement avoids
+  transient GitHub `/pulls/{number}/commits` HTTP 503 failures while preserving
+  a failing exit code for detected secrets. CI run `29709327949` passed format,
+  tests, contract/build, dependency/license/SBOM, and secret checks; the
+  paired Workspace Compatibility run `29709327961` also passed.
+
+- Android physical playback/export acceptance (2026-07-20 00:07 UTC): Android
+  commit `523dd6a` corrected a canonical-path false rejection: Android's
+  `/data/user/0` files-directory link was being treated as a directory escape,
+  so every saved recording failed verification before MediaPlayer was reached.
+  The verifier and read-only recording provider now compare canonical parents,
+  and the exporter has a regression test that opens the provider descriptor.
+  Android CI run `29708652270` passed; its signed APK SHA-256 is
+  `e8ec632ba431bbc65edf85022ef9dbaaafcff8775b1bc14e403e8cedbb285605`.
+  Installed with `adb install -r -d` on the authorized M2012K10C (Android 13)
+  without clearing local data. A new 27-second local recording saved, played
+  (`暂停播放`/`停止播放`, audio-focus result `1`), and opened the system share
+  chooser for export. No audio content was copied or retained as evidence.
+
+- Android settings-list acceptance (2026-07-19 23:25 UTC): Android commit
+  `184bd32` keeps the settings page as four distinct, scrollable groups:
+  Recording, Playback, Appearance, and Recording behavior. Language is only
+  exposed inside Appearance, with a compact value control; the physical-device
+  screenshot review confirmed the grouped cards, dividers, switches, and
+  decoder choices remain visually coherent on the M2012K10C (Android 13).
+  The signed candidate from [Android CI run 29707678233](https://github.com/getio0909/voice-asset-android/actions/runs/29707678233)
+  passed all six jobs, including all 51 Compose instrumentation tests. Its
+  APK SHA-256 is `10f8a06404c6557193b32b66fabb1db035fb773a8ebcdabf578df8c4d727758e`.
+  The APK was installed over the existing signed package with `adb install -r -d`,
+  preserving local data. The prior CI failure was a test attempting to
+  select the language item before scrolling to the newly grouped Appearance
+  section; commit `184bd32` makes the test scroll first.
+
+- Android frontend-design UI pass (2026-07-19 22:49 UTC): the recorder surface
+  now uses a recorder-specific graphite/mint/coral palette, drawn search,
+  settings, back, microphone, playback, and stop icons, and coral active
+  waveform bars instead of text glyphs. No production dependency or recording
+  state behavior changed. Local validation passed `:app:ktlintCheck`,
+  `:app:testDebugUnitTest`, `:app:lintDebug`, `:app:assembleDebug`,
+  `:app:compileDebugAndroidTestKotlin`, and `git diff --check`. The debug APK
+  is `app/build/outputs/apk/debug/app-debug.apk` with SHA-256
+  `E832F7C810E5D0483DB9A5AABBF5DAE060BA49589EB922104A5B511284D7D315`.
+  This is a local UI candidate only; physical-device installation and visual
+  acceptance remain open because `adb devices -l` still lists no device.
+
+- Android settings information-architecture pass (2026-07-19 23:11 UTC): the
+  follow-up UI candidate groups settings into separate Recording, Playback,
+  Appearance, and Recording behavior list sections; language remains inside
+  Appearance. The screenshot review also aligned the surface-container colors
+  with the recorder palette and replaced the sun-like settings glyph with a
+  gear silhouette. Local ktlint, unit tests, lint, debug assembly,
+  AndroidTest compilation, and diff checks pass on Android commit `ca106ec`.
+  Hosted Android CI run `29707385160` is still in progress; no hosted result
+  is inferred here. Physical-device acceptance remains open until this signed
+  candidate is installed and exercised.
 
 - Android recorder-first CI acceptance (2026-07-19 16:03 UTC): PR #13 branch
   `agent/recorder-first-ux` at commit `d060892` passed GitHub Actions run

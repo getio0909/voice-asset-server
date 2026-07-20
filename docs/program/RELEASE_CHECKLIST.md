@@ -57,10 +57,11 @@ Unchecked items are not complete and must not be inferred from project files.
 - [ ] Android offline recording, recovery, upload, and sync (Hosted Emulator
       now covers production MediaRecorder capture, real-M4A recovery, host-driven
       process death, the durable network checkpoint, and 51 instrumentation
-      tests. The recorder-first UI, language switch, playback controls, and
-      settings flows are merged in Android PR #13; post-merge main CI
-      `29694391878` is green. Physical-device microphone/reboot and complete
-      scenario-B evidence remain open)
+      tests. The authorized M2012K10C (Android 13) also passed a signed-build
+      27-second local recording, playback pause/stop, and system-share export
+      on Android CI APK `e8ec632ba431bbc65edf85022ef9dbaaafcff8775b1bc14e403e8cedbb285605`.
+      Physical recovery/reboot,
+      upload/sync, and complete scenario-B evidence remain open)
 - [x] MCP stdio and Streamable HTTP tools, resources, scopes, and audit
 - [x] MCP asset search, specified Revision, exact time citation, scope denial,
       and read-audit vertical slice
