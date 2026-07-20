@@ -2,6 +2,15 @@
 
 - Last updated: 2026-07-20 00:25 UTC
 
+- Independent HTTPS port recheck (2026-07-20 00:38 UTC): the authorized
+  `https://api.getio.net:10443` endpoint returned `200` from `/readyz` with
+  `Via: 1.1 Caddy` and the expected workspace server headers. `/version`
+  reported commit `294334993a64d6ccacb675d814e23441ee438830`. A read-only TLS
+  probe confirmed that ports `443` and `10443` both present `CN=api.getio.net`,
+  expire `2026-10-15T19:52:38Z`, and use the same SHA-256 certificate
+  fingerprint `8CAF123ADD29ECA48BB2A9D2D40185A74589BBD291F8FD732990479CC71DE0FF`;
+  no Caddy configuration was changed by this check.
+
 - Server CI reliability (2026-07-20 00:25 UTC): commit `f3c5def` replaces the
   PR-API-dependent `gitleaks-action` step with a pinned full-history
   `gitleaks v8.24.3` CLI scan (`103` commits, no leaks). The replacement avoids
