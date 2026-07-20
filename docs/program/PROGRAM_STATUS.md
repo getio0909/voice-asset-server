@@ -1,6 +1,6 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-20 00:41 UTC
+- Last updated: 2026-07-20 00:46 UTC
 
 - Independent HTTPS port recheck (2026-07-20 00:38 UTC): the authorized
   `https://api.getio.net:10443` endpoint returned `200` from `/readyz` with
@@ -18,6 +18,15 @@
   upload/sync, and complete Scenario B evidence remain open. All five
   repositories are clean and tracking their remotes; a new placeholder scan
   found only test fixtures, documentation examples, and UI input hints.
+
+- Android settings-list refinement (2026-07-20 00:46 UTC): commit `27ba470`
+  changes the settings surface from four separate cards to one continuous,
+  icon-led list card with dividers between Recording, Playback, Appearance,
+  and Recording behavior. Language remains inside Appearance. Local ktlint,
+  unit tests, AndroidTest compilation, lint, Debug assembly, and `git diff
+  --check` passed. Hosted CI was not yet rechecked because the GitHub Actions
+  API returned a transient HTTP 503; physical visual review remains pending
+  with the authorized Android host currently unreachable.
 
 - Server CI reliability (2026-07-20 00:25 UTC): commit `f3c5def` replaces the
   PR-API-dependent `gitleaks-action` step with a pinned full-history
