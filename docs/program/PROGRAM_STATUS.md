@@ -1,6 +1,6 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-20 00:46 UTC
+- Last updated: 2026-07-20 00:55 UTC
 
 - Independent HTTPS port recheck (2026-07-20 00:38 UTC): the authorized
   `https://api.getio.net:10443` endpoint returned `200` from `/readyz` with
@@ -27,6 +27,13 @@
   --check` passed. Hosted CI was not yet rechecked because the GitHub Actions
   API returned a transient HTTP 503; physical visual review remains pending
   with the authorized Android host currently unreachable.
+
+- Android CI secret-scan repair (2026-07-20 00:55 UTC): hosted run
+  `29709957553` failed only in `secret-scan`; its annotation reported that
+  `gitleaks-action@v3` required a missing license. Commit `936b998` replaces
+  that action with the pinned `gitleaks v8.24.3` CLI used by Server. The local
+  full-history scan covered `79` commits and found no leaks; a fresh hosted
+  run is pending.
 
 - Server CI reliability (2026-07-20 00:25 UTC): commit `f3c5def` replaces the
   PR-API-dependent `gitleaks-action` step with a pinned full-history
