@@ -1,6 +1,6 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-20 01:04 UTC
+- Last updated: 2026-07-20 01:32 UTC
 
 - Independent HTTPS port recheck (2026-07-20 00:38 UTC): the authorized
   `https://api.getio.net:10443` endpoint returned `200` from `/readyz` with
@@ -41,6 +41,13 @@
   supply-chain. The run retained the signed release artifact and the full
   51-test emulator/recovery suite; the physical-device recovery and sync
   evidence remains separate and open.
+
+- Cross-repository CI secret-scan hardening (2026-07-20 01:32 UTC): Console
+  PR #9 merged as `504b218`, MCP PR #2 merged as `ce73ef7`, and Site PR #10
+  merged as `b0797bb`. Each replaced the license-dependent Gitleaks action
+  with the pinned `gitleaks v8.24.3` CLI and an explicit Go runtime. Local
+  full-history scans found no leaks, and every job in all three PR workflows
+  passed. Android and Server already use the same pinned scanner.
 
 - Server CI reliability (2026-07-20 00:25 UTC): commit `f3c5def` replaces the
   PR-API-dependent `gitleaks-action` step with a pinned full-history
