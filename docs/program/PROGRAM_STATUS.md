@@ -1,6 +1,19 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-19 23:25 UTC
+- Last updated: 2026-07-20 00:07 UTC
+
+- Android physical playback/export acceptance (2026-07-20 00:07 UTC): Android
+  commit `523dd6a` corrected a canonical-path false rejection: Android's
+  `/data/user/0` files-directory link was being treated as a directory escape,
+  so every saved recording failed verification before MediaPlayer was reached.
+  The verifier and read-only recording provider now compare canonical parents,
+  and the exporter has a regression test that opens the provider descriptor.
+  Android CI run `29708652270` passed; its signed APK SHA-256 is
+  `e8ec632ba431bbc65edf85022ef9dbaaafcff8775b1bc14e403e8cedbb285605`.
+  Installed with `adb install -r -d` on the authorized M2012K10C (Android 13)
+  without clearing local data. A new 27-second local recording saved, played
+  (`暂停播放`/`停止播放`, audio-focus result `1`), and opened the system share
+  chooser for export. No audio content was copied or retained as evidence.
 
 - Android settings-list acceptance (2026-07-19 23:25 UTC): Android commit
   `184bd32` keeps the settings page as four distinct, scrollable groups:
