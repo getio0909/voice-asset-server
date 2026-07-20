@@ -1,6 +1,6 @@
 # VoiceAsset Program Status
 
-- Last updated: 2026-07-20 00:25 UTC
+- Last updated: 2026-07-20 00:41 UTC
 
 - Independent HTTPS port recheck (2026-07-20 00:38 UTC): the authorized
   `https://api.getio.net:10443` endpoint returned `200` from `/readyz` with
@@ -10,6 +10,14 @@
   expire `2026-10-15T19:52:38Z`, and use the same SHA-256 certificate
   fingerprint `8CAF123ADD29ECA48BB2A9D2D40185A74589BBD291F8FD732990479CC71DE0FF`;
   no Caddy configuration was changed by this check.
+
+- Android recovery gate re-audit (2026-07-20 00:41 UTC): local Android
+  `:app:ktlintCheck`, `:app:testDebugUnitTest`, and
+  `:app:compileDebugAndroidTestKotlin` passed again. The authorized Android
+  host then timed out on SSH, so physical process-recovery/reboot,
+  upload/sync, and complete Scenario B evidence remain open. All five
+  repositories are clean and tracking their remotes; a new placeholder scan
+  found only test fixtures, documentation examples, and UI input hints.
 
 - Server CI reliability (2026-07-20 00:25 UTC): commit `f3c5def` replaces the
   PR-API-dependent `gitleaks-action` step with a pinned full-history
